@@ -1,0 +1,3 @@
+[submodule "1st-assembler"]
+	path = 1st-assembler
+	url = git@github.com:CPU-EagleJump/1st-assembler.git

@@ -1,0 +1,70 @@
+#ifndef _COMMON_H_
+#define _COMMON_H_
+
+#include <vector>
+#include <string>
+#include <cstdint>
+
+using namespace std;
+
+
+// main.cpp
+extern const uint32_t WORD_SIZE;
+
+// cpu.cpp
+class CPU
+{
+private:
+    uint32_t pc, r[32];
+    vector<uint32_t> mem;
+    bool halted_f;
+    uint32_t cycles;
+
+    bool debug_f;
+
+    void inc_pc() { pc += WORD_SIZE; }
+    void flush_r0() { r[0] = 0; }
+
+public:
+    CPU(uint32_t mem_size, bool is_debug);
+    ~CPU();
+
+    uint32_t get_pc() { return pc; }
+    bool is_halted() { return halted_f; }
+
+    void print_state();
+
+    // R type
+    void add(uint32_t rd, uint32_t rs1, uint32_t rs2);
+    void sub(uint32_t rd, uint32_t rs1, uint32_t rs2);
+    // I type
+    void addi(uint32_t rd, uint32_t rs, int32_t imm);
+    void lw(uint32_t rd, uint32_t rs, int32_t imm);
+    void jalr(uint32_t rd, uint32_t rs, int32_t imm);
+    // S type
+    void sw(uint32_t rs2, uint32_t rs1, int32_t imm);
+    // SB type
+    void beq(uint32_t rs1, uint32_t rs2, int32_t imm);
+    void bne(uint32_t rs1, uint32_t rs2, int32_t imm);
+    void blt(uint32_t rs1, uint32_t rs2, int32_t imm);
+    void bge(uint32_t rs1, uint32_t rs2, int32_t imm);
+    // UJ type
+    void jal(uint32_t rd, int32_t imm);
+    // original
+    void halt();
+};
+
+// exec.cpp
+void step_exec(uint32_t word, CPU *cpu);
+
+// util.cpp
+void print_hex(uint32_t n);
+void print_dec_2(uint32_t n);
+void print_dec_10(uint32_t n);
+
+// report.cpp
+void report_error(string message);
+void report_warning(string message);
+
+#endif
+

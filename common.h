@@ -15,21 +15,26 @@ extern const uint32_t WORD_SIZE;
 class CPU
 {
 private:
-    uint32_t pc, r[32];
+    uint32_t pc, prev_pc, r[32];
     vector<uint32_t> mem;
+    uint32_t mem_size;
     bool halted_f;
     uint32_t cycles;
 
     bool debug_f;
 
-    void inc_pc() { pc += WORD_SIZE; }
+    void update_pc(uint32_t new_pc);
+    void inc_pc() { update_pc(pc + WORD_SIZE); }
     void flush_r0() { r[0] = 0; }
+    uint32_t load_mem(uint32_t addr);
+    void store_mem(uint32_t addr, uint32_t val);
 
 public:
     CPU(uint32_t mem_size, bool is_debug);
     ~CPU();
 
     uint32_t get_pc() { return pc; }
+    uint32_t get_prev_pc() { return pc; }
     bool is_halted() { return halted_f; }
 
     void print_state();

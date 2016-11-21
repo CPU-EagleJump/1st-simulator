@@ -41,7 +41,19 @@ int main(int argc, char **argv)
 
     CPU *cpu = new CPU(0x100000, false);
     while (!cpu->is_halted())
-        step_exec(words[cpu->get_pc() >> 2], cpu);
+    {
+        uint32_t idx = cpu->get_pc() >> 2;
+        if (idx < words.size())
+            step_exec(words[cpu->get_pc() >> 2], cpu);
+        else {
+            cout << "PC is out of range." << endl;
+            cout << "Previous PC = ";
+            print_hex(cpu->get_prev_pc());
+            cout << endl << endl;
+            cout << "Execution interrupted." << endl << endl;
+            break;
+        }
+    }
 
     cpu->print_state();
 

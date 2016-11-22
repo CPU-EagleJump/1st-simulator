@@ -66,7 +66,7 @@ void CPU::sub(uint32_t rd, uint32_t rs1, uint32_t rs2)
         cerr << "sub" << endl;
     cycles++;
 
-    r[rd] = r[rs1] + r[rs2];
+    r[rd] = r[rs1] - r[rs2];
     flush_r0();
     inc_pc();
 }

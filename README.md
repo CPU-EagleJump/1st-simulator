@@ -11,3 +11,12 @@
 ## Usage
 
 	$ ./sim <filename>.zoi
+
+	$ ./sim -d <filename>.zoi
+
+### Commands in debug mode
+
+- `next`
+- `continue`
+- `print`
+- `quit`

@@ -10,6 +10,7 @@ using namespace std;
 
 // main.cpp
 extern const uint32_t WORD_SIZE;
+void print_line_of_pc(uint32_t pc);
 
 // cpu.cpp
 class CPU
@@ -18,7 +19,7 @@ private:
     uint32_t pc, prev_pc, r[32];
     vector<uint32_t> mem;
     uint32_t mem_size;
-    bool halted_f;
+    bool halted_f, exception_f;
     uint32_t cycles;
 
     bool debug_f;
@@ -36,6 +37,7 @@ public:
     uint32_t get_pc() { return pc; }
     uint32_t get_prev_pc() { return pc; }
     bool is_halted() { return halted_f; }
+    bool is_exception() { return exception_f; }
 
     void print_state();
 
@@ -60,9 +62,10 @@ public:
 };
 
 // exec.cpp
-void step_exec(uint32_t word, CPU *cpu);
+bool step_exec(CPU *cpu, const vector<uint32_t> &insts);
 
 // util.cpp
+vector<string> split_string(const string &str, const string &delims);
 void print_hex(uint32_t n);
 void print_dec_2(uint32_t n);
 void print_dec_10(uint32_t n);

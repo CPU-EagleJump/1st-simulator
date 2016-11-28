@@ -1,6 +1,28 @@
+#include <vector>
 #include <iostream>
 #include <iomanip>
 using namespace std;
+
+vector<string> split_string(const string &str, const string &delims)
+{
+    vector<string> elems;
+    string el;
+
+    for (char c : str) {
+		if (delims.find(c) != string::npos) {
+            if (!el.empty()) {
+                elems.push_back(el);
+                el.clear();
+            }
+        } else {
+            el += c;
+        }
+    }
+    if (!el.empty())
+        elems.push_back(el);
+
+    return elems;
+}
 
 void print_hex(uint32_t n)
 {

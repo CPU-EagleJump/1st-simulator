@@ -10,9 +10,12 @@ CPU::CPU(uint32_t mem_size, bool is_debug)
     pc = 0;
     prev_pc = 0;
     r[0] = 0;
+    for (int i = 0; i < 32; i++)
+        r[i] = 0;
     mem = vector<uint32_t>(mem_size);
     this->mem_size = mem_size;
     halted_f = false;
+    exception_f = false;
     cycles = 0;
 
     debug_f = is_debug;
@@ -94,11 +97,11 @@ void CPU::lw(uint32_t rd, uint32_t rs, int32_t imm)
         flush_r0();
         inc_pc();
     } else {
+        print_line_of_pc(pc);
         cout << "Invalid memory access. addr = ";
         print_hex(addr);
         cout << endl << endl;
-        cout << "Execution interrupted." << endl << endl;
-        halted_f = true;
+        exception_f = true;
     }
 }
 
@@ -124,11 +127,11 @@ void CPU::sw(uint32_t rs2, uint32_t rs1, int32_t imm)
         mem[addr] = r[rs2];
         inc_pc();
     } else {
+        print_line_of_pc(pc);
         cout << "Invalid memory access. addr = ";
         print_hex(addr);
         cout << endl << endl;
-        cout << "Execution interrupted." << endl << endl;
-        halted_f = true;
+        exception_f = true;
     }
 }
 
@@ -197,7 +200,6 @@ void CPU::halt()
         cerr << "halt" << endl;
     cycles++;
 
-    cout << "Execution finished." << endl << endl;
     halted_f = true;
 }
 

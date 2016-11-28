@@ -1,5 +1,5 @@
 CXX := g++
-CXXFLAGS := -Wall -g -O2 -std=c++14
+CXXFLAGS := -Wall -O2 -std=c++1y
 
 TARGET := sim
 OBJS := $(patsubst %.cpp, %.o, $(wildcard *.cpp))

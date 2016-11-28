@@ -3,8 +3,16 @@
 
 #include "common.h"
 
-void step_exec(uint32_t word, CPU *cpu)
+bool step_exec(CPU *cpu, const vector<uint32_t> &insts)
 {
+    uint32_t idx = cpu->get_pc() >> 2;
+    if (idx >= insts.size()) {
+        print_line_of_pc(cpu->get_prev_pc());
+        cout << "PC is out of range." << endl << endl;
+        return false;
+    }
+    uint32_t word = insts[idx];
+
     uint32_t opcode, rd, funct3, rs1, rs2;
     opcode = word & 0b1111111;
     rd = (word >> 7) & 0b11111;
@@ -57,5 +65,10 @@ void step_exec(uint32_t word, CPU *cpu)
         else if (opcode == 0b1100111)
             cpu->jalr(rd, rs1, imm);
     }
+
+    if (cpu->is_exception())
+        return false;
+    else
+        return true;
 }
 

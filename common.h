@@ -31,7 +31,7 @@ private:
     void store_mem(uint32_t addr, uint32_t val);
 
 public:
-    CPU(uint32_t mem_size, bool is_debug);
+    CPU(uint32_t mem_size, vector<uint32_t> static_data, bool is_debug);
     ~CPU();
 
     uint32_t get_pc() { return pc; }

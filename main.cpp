@@ -9,11 +9,12 @@ using namespace std;
 #include "common.h"
 
 const uint32_t WORD_SIZE = 4;
+const uint32_t MEM_SIZE = 0x1000000; // 64 MiB
 
 ifstream zoi_file;
 bool is_debug_mode;
 
-vector<uint32_t> insts;
+vector<uint32_t> insts, data;
 vector<uint32_t> inst_lines;
 vector<string> lines;
 CPU *cpu;
@@ -124,15 +125,26 @@ int main(int argc, char **argv)
         exit(1);
     }
 
-    uint32_t insts_len = read_word();
-    insts = vector<uint32_t>(insts_len);
-    for (uint32_t i = 0; i < insts_len; i++) {
+    uint32_t data_len = read_word();
+    if (data_len > MEM_SIZE) {
+        zoi_file.close();
+        report_error("static data is too large");
+        exit(1);
+    }
+    data = vector<uint32_t>(data_len);
+    for (uint32_t i = 0; i < data_len; i++) {
+        data[i] = read_word();
+    }
+
+    uint32_t text_len = read_word();
+    insts = vector<uint32_t>(text_len);
+    for (uint32_t i = 0; i < text_len; i++) {
         insts[i] = read_word();
     }
 
     if (is_debug_file) {
-        inst_lines = vector<uint32_t>(insts_len); // 1-origin
-        for (uint32_t i = 0; i < insts_len; i++) {
+        inst_lines = vector<uint32_t>(text_len); // 1-origin
+        for (uint32_t i = 0; i < text_len; i++) {
             inst_lines[i] = read_word();
         }
 
@@ -146,11 +158,10 @@ int main(int argc, char **argv)
     zoi_file.close();
 
 
-    cpu = new CPU(0x100000, false);
+    cpu = new CPU(MEM_SIZE, data, false);
 
     if (is_debug_mode) {
         if (!is_debug_file) {
-            zoi_file.close();
             report_error("you must specify binary with debug info when in debug mode");
             exit(1);
         }

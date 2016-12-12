@@ -5,7 +5,7 @@ using namespace std;
 
 #include "common.h"
 
-CPU::CPU(uint32_t mem_size, bool is_debug)
+CPU::CPU(uint32_t mem_size, vector<uint32_t> static_data, bool is_debug)
 {
     pc = 0;
     prev_pc = 0;
@@ -14,6 +14,7 @@ CPU::CPU(uint32_t mem_size, bool is_debug)
         r[i] = 0;
     mem = vector<uint32_t>(mem_size);
     this->mem_size = mem_size;
+    copy(static_data.begin(), static_data.end(), mem.begin());
     halted_f = false;
     exception_f = false;
     cycles = 0;

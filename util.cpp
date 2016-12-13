@@ -9,7 +9,7 @@ vector<string> split_string(const string &str, const string &delims)
     string el;
 
     for (char c : str) {
-		if (delims.find(c) != string::npos) {
+        if (delims.find(c) != string::npos) {
             if (!el.empty()) {
                 elems.push_back(el);
                 el.clear();

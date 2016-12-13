@@ -7,11 +7,11 @@ using namespace std;
 
 void report_error(string message)
 {
-    cout << "error: " << message << endl;
+    cerr << "error: " << message << endl;
 }
 
 void report_warning(string message)
 {
-    cout << "warning: " << message << endl;
+    cerr << "warning: " << message << endl;
 }
 

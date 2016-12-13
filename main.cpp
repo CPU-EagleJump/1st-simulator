@@ -31,18 +31,18 @@ void print_line_of_pc(uint32_t pc)
     uint32_t idx = pc >> 2;
     uint32_t cur_lnum = inst_lines[idx];
     string cur_line = lines[cur_lnum - 1];
-    cout << cur_lnum << ": " << cur_line << endl;
+    cerr << cur_lnum << ": " << cur_line << endl;
 }
 
 bool step_and_report()
 {
     bool res = step_exec(cpu, insts);
     if (!res) {
-        cout << "Execution interrupted." << endl << endl;
+        cerr << "Execution interrupted." << endl << endl;
         cpu->print_state();
         return false;
     } else if (cpu->is_halted()) {
-        cout << "Execution finished." << endl << endl;
+        cerr << "Execution finished." << endl << endl;
         cpu->print_state();
         return false;
     }
@@ -76,7 +76,7 @@ bool process_command(string cmd_line)
     else if (cmd[0] == 'p')
         cpu->print_state();
     else
-        cout << "Undefined command." << endl;
+        cerr << "Undefined command." << endl;
 
     return is_next;
 }
@@ -131,12 +131,13 @@ int main(int argc, char **argv)
         report_error("static data is too large");
         exit(1);
     }
+    uint32_t text_len = read_word();
+
     data = vector<uint32_t>(data_len);
     for (uint32_t i = 0; i < data_len; i++) {
         data[i] = read_word();
     }
 
-    uint32_t text_len = read_word();
     insts = vector<uint32_t>(text_len);
     for (uint32_t i = 0; i < text_len; i++) {
         insts[i] = read_word();
@@ -168,7 +169,7 @@ int main(int argc, char **argv)
 
         for (;;) {
             print_line_of_pc(cpu->get_pc());
-            cout << "> ";
+            cerr << "> ";
             string cmd;
             getline(cin, cmd);
             bool is_next = process_command(cmd);

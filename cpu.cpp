@@ -10,8 +10,10 @@ CPU::CPU(uint32_t mem_size, vector<uint32_t> static_data, bool is_debug)
     pc = 0;
     prev_pc = 0;
     r[0] = 0;
-    for (int i = 0; i < 32; i++)
+    for (int i = 0; i < 32; i++) {
         r[i] = 0;
+        f[i] = 0;
+    }
     mem = vector<uint32_t>(mem_size);
     this->mem_size = mem_size;
     copy(static_data.begin(), static_data.end(), mem.begin());
@@ -34,22 +36,22 @@ void CPU::update_pc(uint32_t new_pc)
 
 void CPU::print_state()
 {
-    cout << cycles << " cycles." << endl << endl;
-    cout << "PC = ";
+    cerr << cycles << " cycles." << endl << endl;
+    cerr << "PC = ";
     print_hex(pc);
-    cout << " (" << pc << ")";
-    cout << endl << endl;
-    cout << "GPRs:" << endl;
+    cerr << " (" << pc << ")";
+    cerr << endl << endl;
+    cerr << "GPRs:" << endl;
     for (int i = 0; i < 32; i++) {
-        cout << "x";
+        cerr << "x";
         print_dec_2(i);
-        cout << " = ";
+        cerr << " = ";
         print_dec_10(r[i]);
-        cout << ";";
+        cerr << ";";
         if (i % 4 == 3)
-            cout << endl;
+            cerr << endl;
         else
-            cout << " ";
+            cerr << " ";
     }
 }
 
@@ -75,6 +77,54 @@ void CPU::sub(uint32_t rd, uint32_t rs1, uint32_t rs2)
     inc_pc();
 }
 
+void CPU::fadd(uint32_t rd, uint32_t rs1, uint32_t rs2)
+{
+    cycles++;
+
+    f[rd] = f[rs1] + f[rs2];
+    inc_pc();
+}
+
+void CPU::fsub(uint32_t rd, uint32_t rs1, uint32_t rs2)
+{
+    cycles++;
+
+    f[rd] = f[rs1] - f[rs2];
+    inc_pc();
+}
+
+void CPU::fmul(uint32_t rd, uint32_t rs1, uint32_t rs2)
+{
+    cycles++;
+
+    f[rd] = f[rs1] * f[rs2];
+    inc_pc();
+}
+
+void CPU::fdiv(uint32_t rd, uint32_t rs1, uint32_t rs2)
+{
+    cycles++;
+
+    f[rd] = f[rs1] / f[rs2];
+    inc_pc();
+}
+
+void CPU::fle(uint32_t rd, uint32_t rs1, uint32_t rs2)
+{
+    cycles++;
+
+    r[rd] = f[rs1] <= f[rs2];
+    inc_pc();
+}
+
+void CPU::fcvt_s_w(uint32_t rd, uint32_t rs1)
+{
+    cycles++;
+
+    f[rd] = r[rs1];
+    inc_pc();
+}
+
 void CPU::addi(uint32_t rd, uint32_t rs, int32_t imm)
 {
     if (debug_f)
@@ -92,16 +142,33 @@ void CPU::lw(uint32_t rd, uint32_t rs, int32_t imm)
         cerr << "lw" << endl;
     cycles++;
 
-    uint32_t addr = r[rs] + imm;
-    if (addr < mem_size) {
-        r[rd] = mem[addr];
+    uint32_t addr = r[rs] + imm, idx = addr >> 2;
+    if (idx < mem_size) {
+        r[rd] = mem[idx];
         flush_r0();
         inc_pc();
     } else {
         print_line_of_pc(pc);
-        cout << "Invalid memory access. addr = ";
+        cerr << "Invalid memory access. addr = ";
         print_hex(addr);
-        cout << endl << endl;
+        cerr << endl << endl;
+        exception_f = true;
+    }
+}
+
+void CPU::flw(uint32_t rd, uint32_t rs, int32_t imm)
+{
+    cycles++;
+
+    uint32_t addr = r[rs] + imm, idx = addr >> 2;
+    if (idx < mem_size) {
+        f[rd] = *(float *)&mem[idx];
+        inc_pc();
+    } else {
+        print_line_of_pc(pc);
+        cerr << "Invalid memory access. addr = ";
+        print_hex(addr);
+        cerr << endl << endl;
         exception_f = true;
     }
 }
@@ -123,15 +190,32 @@ void CPU::sw(uint32_t rs2, uint32_t rs1, int32_t imm)
         cerr << "sw" << endl;
     cycles++;
 
-    uint32_t addr = r[rs1] + imm;
-    if (addr < mem_size) {
-        mem[addr] = r[rs2];
+    uint32_t addr = r[rs1] + imm, idx = addr >> 2;
+    if (idx < mem_size) {
+        mem[idx] = r[rs2];
         inc_pc();
     } else {
         print_line_of_pc(pc);
-        cout << "Invalid memory access. addr = ";
+        cerr << "Invalid memory access. addr = ";
         print_hex(addr);
-        cout << endl << endl;
+        cerr << endl << endl;
+        exception_f = true;
+    }
+}
+
+void CPU::fsw(uint32_t rs2, uint32_t rs1, int32_t imm)
+{
+    cycles++;
+
+    uint32_t addr = r[rs1] + imm, idx = addr >> 2;
+    if (idx < mem_size) {
+        mem[idx] = *(uint32_t *)&f[rs2];
+        inc_pc();
+    } else {
+        print_line_of_pc(pc);
+        cerr << "Invalid memory access. addr = ";
+        print_hex(addr);
+        cerr << endl << endl;
         exception_f = true;
     }
 }
@@ -202,5 +286,14 @@ void CPU::halt()
     cycles++;
 
     halted_f = true;
+}
+
+void CPU::outb(uint32_t rs2)
+{
+    cycles++;
+
+    cout << (char)r[rs2];
+
+    inc_pc();
 }
 

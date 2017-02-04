@@ -10,6 +10,8 @@ using namespace std;
 
 // main.cpp
 extern const uint32_t WORD_SIZE;
+extern ifstream in_file;
+extern ofstream out_file;
 void print_line_of_pc(uint32_t pc);
 
 // cpu.cpp
@@ -49,8 +51,12 @@ public:
     void fsub(uint32_t rd, uint32_t rs1, uint32_t rs2);
     void fmul(uint32_t rd, uint32_t rs1, uint32_t rs2);
     void fdiv(uint32_t rd, uint32_t rs1, uint32_t rs2);
+    void fsgnj(uint32_t rd, uint32_t rs1, uint32_t rs2);
+    void fsgnjn(uint32_t rd, uint32_t rs1, uint32_t rs2);
+    void fsgnjx(uint32_t rd, uint32_t rs1, uint32_t rs2);
     void fle(uint32_t rd, uint32_t rs1, uint32_t rs2);
     void fcvt_s_w(uint32_t rd, uint32_t rs1);
+    void fmv_s_x(uint32_t rd, uint32_t rs1);
     // I type
     void addi(uint32_t rd, uint32_t rs, int32_t imm);
     void lw(uint32_t rd, uint32_t rs, int32_t imm);
@@ -68,6 +74,7 @@ public:
     void jal(uint32_t rd, int32_t imm);
     // original
     void halt();
+    void inb(uint32_t rd);
     void outb(uint32_t rs2);
 };
 

@@ -35,10 +35,20 @@ bool step_exec(CPU *cpu, const vector<uint32_t> &insts)
             cpu->fmul(rd, rs1, rs2);
         else if (funct7 == 0b0001100)
             cpu->fdiv(rd, rs1, rs2);
+        else if (funct7 == 0b0010000) {
+            if (funct3 == 0b000)
+                cpu->fsgnj(rd, rs1, rs2);
+            else if (funct3 == 0b001)
+                cpu->fsgnjn(rd, rs1, rs2);
+            else if (funct3 == 0b010)
+                cpu->fsgnjx(rd, rs1, rs2);
+        }
         else if (funct7 == 0b1010000)
             cpu->fle(rd, rs1, rs2);
         else if (funct7 == 0b1101000)
             cpu->fcvt_s_w(rd, rs1);
+        else if (funct7 == 0b1111000)
+            cpu->fmv_s_x(rd, rs1);
     } else if (opcode == 0b0100011 || opcode == 0b0100111) { // S type
         uint32_t imm_lo = (word >> 25) << 5 | rd;
         uint32_t imm_u = (imm_lo >> 11) ? (0xfffff000 | imm_lo) : imm_lo; // sign extension
@@ -69,6 +79,8 @@ bool step_exec(CPU *cpu, const vector<uint32_t> &insts)
         cpu->jal(rd, imm);
     } else if (opcode == 0) {
         cpu->halt();
+    } else if (opcode == 0b0000010) {
+        cpu->inb(rd);
     } else if (opcode == 0b0000110) {
         cpu->outb(rs2);
     } else { // I type

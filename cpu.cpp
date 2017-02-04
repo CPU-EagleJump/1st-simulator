@@ -1,4 +1,5 @@
 #include <vector>
+#include <fstream>
 #include <iostream>
 
 using namespace std;
@@ -109,6 +110,36 @@ void CPU::fdiv(uint32_t rd, uint32_t rs1, uint32_t rs2)
     inc_pc();
 }
 
+void CPU::fsgnj(uint32_t rd, uint32_t rs1, uint32_t rs2)
+{
+    cycles++;
+
+    uint32_t res = ((*(uint32_t *)&f[rs1]) & 0x7fffffff) | ((*(uint32_t *)&f[rs2]) & 0x80000000);
+    f[rd] = *(float *)&res;
+
+    inc_pc();
+}
+
+void CPU::fsgnjn(uint32_t rd, uint32_t rs1, uint32_t rs2)
+{
+    cycles++;
+
+    uint32_t res = ((*(uint32_t *)&f[rs1]) & 0x7fffffff) | (~(*(uint32_t *)&f[rs2]) & 0x80000000);
+    f[rd] = *(float *)&res;
+
+    inc_pc();
+}
+
+void CPU::fsgnjx(uint32_t rd, uint32_t rs1, uint32_t rs2)
+{
+    cycles++;
+
+    uint32_t res = ((*(uint32_t *)&f[rs1]) & 0x7fffffff) ^ ((*(uint32_t *)&f[rs2]) & 0x80000000);
+    f[rd] = *(float *)&res;
+
+    inc_pc();
+}
+
 void CPU::fle(uint32_t rd, uint32_t rs1, uint32_t rs2)
 {
     cycles++;
@@ -122,6 +153,15 @@ void CPU::fcvt_s_w(uint32_t rd, uint32_t rs1)
     cycles++;
 
     f[rd] = r[rs1];
+    inc_pc();
+}
+
+void CPU::fmv_s_x(uint32_t rd, uint32_t rs1)
+{
+    cycles++;
+
+    f[rd] = *(float *)&r[rs1];
+
     inc_pc();
 }
 
@@ -288,11 +328,22 @@ void CPU::halt()
     halted_f = true;
 }
 
+void CPU::inb(uint32_t rd)
+{
+    cycles++;
+
+    char c;
+    in_file.get(c);
+    r[rd] = c; // clears upper 24 bits
+
+    inc_pc();
+}
+
 void CPU::outb(uint32_t rs2)
 {
     cycles++;
 
-    cout << (char)r[rs2];
+    out_file.put((char)r[rs2]);
 
     inc_pc();
 }

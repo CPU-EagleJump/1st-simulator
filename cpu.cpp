@@ -1,6 +1,7 @@
 #include <vector>
 #include <fstream>
 #include <iostream>
+#include <iomanip>
 
 using namespace std;
 
@@ -40,8 +41,8 @@ void CPU::print_state()
     cerr << cycles << " cycles." << endl << endl;
     cerr << "PC = ";
     print_hex(pc);
-    cerr << " (" << pc << ")";
-    cerr << endl << endl;
+    cerr << " (" << pc << ")" << endl;
+
     cerr << "GPRs:" << endl;
     for (int i = 0; i < 32; i++) {
         cerr << "x";
@@ -54,6 +55,20 @@ void CPU::print_state()
         else
             cerr << " ";
     }
+
+    cerr << "FPRs:" << endl;
+    for (int i = 0; i < 32; i++) {
+        cerr << "f";
+        print_dec_2(i);
+        cerr << " = ";
+        cerr << setprecision(5) << scientific << f[i];
+        cerr << ";";
+        if (i % 4 == 3)
+            cerr << endl;
+        else
+            cerr << " ";
+    }
+    cerr << endl;
 }
 
 void CPU::add(uint32_t rd, uint32_t rs1, uint32_t rs2)

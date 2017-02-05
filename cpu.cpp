@@ -191,6 +191,7 @@ void CPU::lw(uint32_t rd, uint32_t rs, int32_t imm)
         print_line_of_pc(pc);
         cerr << "Invalid memory access. addr = ";
         print_hex(addr);
+        cerr << " (" << addr << ")";
         cerr << endl << endl;
         exception_f = true;
     }
@@ -208,6 +209,7 @@ void CPU::flw(uint32_t rd, uint32_t rs, int32_t imm)
         print_line_of_pc(pc);
         cerr << "Invalid memory access. addr = ";
         print_hex(addr);
+        cerr << " (" << addr << ")";
         cerr << endl << endl;
         exception_f = true;
     }
@@ -238,6 +240,7 @@ void CPU::sw(uint32_t rs2, uint32_t rs1, int32_t imm)
         print_line_of_pc(pc);
         cerr << "Invalid memory access. addr = ";
         print_hex(addr);
+        cerr << " (" << addr << ")";
         cerr << endl << endl;
         exception_f = true;
     }
@@ -255,6 +258,7 @@ void CPU::fsw(uint32_t rs2, uint32_t rs1, int32_t imm)
         print_line_of_pc(pc);
         cerr << "Invalid memory access. addr = ";
         print_hex(addr);
+        cerr << " (" << addr << ")";
         cerr << endl << endl;
         exception_f = true;
     }

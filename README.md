@@ -16,7 +16,7 @@
 
 ### Commands in debug mode
 
-- `next`
+- `next`[count]
 - `continue`
 - `print`
 - `quit`

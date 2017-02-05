@@ -64,22 +64,30 @@ bool process_command(string cmd_line)
     string cmd = elems[0];
     vector<string> args(elems.begin() + 1, elems.end());
 
-    bool is_next = true;
-
-    if (cmd[0] == 'n')
-        is_next = step_and_report();
+    if (cmd[0] == 'n') {
+        if (args.empty())
+            return step_and_report();
+        else {
+            int cnt = stoi(args[0]);
+            for (int i = 0; i < cnt; i++) {
+                if (!step_and_report())
+                    return false;
+            }
+            return true;
+        }
+    }
     else if (cmd[0] == 'c') {
         exec_continue();
-        is_next = false;
+        return false;
     }
     else if (cmd[0] == 'q')
-        is_next = false;
+        return false;
     else if (cmd[0] == 'p')
         cpu->print_state();
     else
         cerr << "Undefined command." << endl;
 
-    return is_next;
+    return true;
 }
 
 int main(int argc, char **argv)

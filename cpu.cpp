@@ -398,7 +398,7 @@ void CPU::inb(uint32_t rd)
 
     char c;
     in_file.get(c);
-    r[rd] = c; // clears upper 24 bits
+    r[rd] = *(unsigned char *)&c; // clears upper 24 bits
 
     inc_pc();
 }

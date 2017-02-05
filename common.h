@@ -43,6 +43,7 @@ public:
     bool is_exception() { return exception_f; }
 
     void print_state();
+    void report_NaN_exception(uint32_t rd);
 
     // R type
     void add(uint32_t rd, uint32_t rs1, uint32_t rs2);

@@ -1,3 +1,4 @@
+#include <cmath>
 #include <vector>
 #include <fstream>
 #include <iostream>
@@ -34,6 +35,16 @@ void CPU::update_pc(uint32_t new_pc)
 {
     prev_pc = pc;
     pc = new_pc;
+}
+
+void CPU::report_NaN_exception(uint32_t rd)
+{
+    print_line_of_pc(pc);
+    cerr << "NaN value appeared at f";
+    print_dec_2(rd);
+    cerr << ".";
+    cerr << endl << endl;
+    exception_f = true;
 }
 
 void CPU::print_state()
@@ -98,6 +109,9 @@ void CPU::fadd(uint32_t rd, uint32_t rs1, uint32_t rs2)
     cycles++;
 
     f[rd] = f[rs1] + f[rs2];
+    if (isnan(f[rd]))
+        report_NaN_exception(rd);
+
     inc_pc();
 }
 
@@ -106,6 +120,9 @@ void CPU::fsub(uint32_t rd, uint32_t rs1, uint32_t rs2)
     cycles++;
 
     f[rd] = f[rs1] - f[rs2];
+    if (isnan(f[rd]))
+        report_NaN_exception(rd);
+
     inc_pc();
 }
 
@@ -114,6 +131,9 @@ void CPU::fmul(uint32_t rd, uint32_t rs1, uint32_t rs2)
     cycles++;
 
     f[rd] = f[rs1] * f[rs2];
+    if (isnan(f[rd]))
+        report_NaN_exception(rd);
+
     inc_pc();
 }
 
@@ -122,6 +142,9 @@ void CPU::fdiv(uint32_t rd, uint32_t rs1, uint32_t rs2)
     cycles++;
 
     f[rd] = f[rs1] / f[rs2];
+    if (isnan(f[rd]))
+        report_NaN_exception(rd);
+
     inc_pc();
 }
 
@@ -131,6 +154,8 @@ void CPU::fsgnj(uint32_t rd, uint32_t rs1, uint32_t rs2)
 
     uint32_t res = ((*(uint32_t *)&f[rs1]) & 0x7fffffff) | ((*(uint32_t *)&f[rs2]) & 0x80000000);
     f[rd] = *(float *)&res;
+    if (isnan(f[rd]))
+        report_NaN_exception(rd);
 
     inc_pc();
 }
@@ -141,6 +166,8 @@ void CPU::fsgnjn(uint32_t rd, uint32_t rs1, uint32_t rs2)
 
     uint32_t res = ((*(uint32_t *)&f[rs1]) & 0x7fffffff) | (~(*(uint32_t *)&f[rs2]) & 0x80000000);
     f[rd] = *(float *)&res;
+    if (isnan(f[rd]))
+        report_NaN_exception(rd);
 
     inc_pc();
 }
@@ -151,6 +178,8 @@ void CPU::fsgnjx(uint32_t rd, uint32_t rs1, uint32_t rs2)
 
     uint32_t res = ((*(uint32_t *)&f[rs1]) & 0x7fffffff) ^ ((*(uint32_t *)&f[rs2]) & 0x80000000);
     f[rd] = *(float *)&res;
+    if (isnan(f[rd]))
+        report_NaN_exception(rd);
 
     inc_pc();
 }
@@ -168,6 +197,9 @@ void CPU::fcvt_s_w(uint32_t rd, uint32_t rs1)
     cycles++;
 
     f[rd] = r[rs1];
+    if (isnan(f[rd]))
+        report_NaN_exception(rd);
+
     inc_pc();
 }
 
@@ -176,6 +208,8 @@ void CPU::fmv_s_x(uint32_t rd, uint32_t rs1)
     cycles++;
 
     f[rd] = *(float *)&r[rs1];
+    if (isnan(f[rd]))
+        report_NaN_exception(rd);
 
     inc_pc();
 }
@@ -219,6 +253,8 @@ void CPU::flw(uint32_t rd, uint32_t rs, int32_t imm)
     uint32_t addr = r[rs] + imm, idx = addr >> 2;
     if (idx < mem_size) {
         f[rd] = *(float *)&mem[idx];
+        if (isnan(f[rd]))
+            report_NaN_exception(rd);
         inc_pc();
     } else {
         print_line_of_pc(pc);

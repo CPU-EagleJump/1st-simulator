@@ -312,6 +312,15 @@ void CPU::bge(uint32_t rs1, uint32_t rs2, int32_t imm)
         inc_pc();
 }
 
+void CPU::lui(uint32_t rd, uint32_t imm_u)
+{
+    cycles++;
+
+    r[rd] = imm_u | (r[rd] & 0x00000fff); // preserve the lowest 12 bits
+
+    inc_pc();
+}
+
 void CPU::jal(uint32_t rd, int32_t imm)
 {
     if (debug_f)

@@ -71,6 +71,9 @@ bool step_exec(CPU *cpu, const vector<uint32_t> &insts)
             cpu->blt(rs1, rs2, imm);
         else if (funct3 == 0b101)
             cpu->bge(rs1, rs2, imm);
+    } else if (opcode == 0b0110111) { // U type
+        uint32_t imm_u = word & 0xfffff000;
+        cpu->lui(rd, imm_u);
     } else if (opcode == 0b1101111) { // UJ type
         uint32_t imm_lo = (word >> 31) << 20 | (word & 0xff000) | (word & 0x100000) >> 9 | (word & 0x7fe00000) >> 20;
         uint32_t imm_u = (imm_lo >> 20) ? (0xffe00000 | imm_lo) : imm_lo;

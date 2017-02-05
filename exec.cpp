@@ -59,7 +59,7 @@ bool step_exec(CPU *cpu, const vector<uint32_t> &insts)
         else if (opcode == 0b0100111)
             cpu->fsw(rs2, rs1, imm);
     } else if (opcode == 0b1100011) { // SB type
-        uint32_t imm_lo = (word >> 31) << 12 | (word & 0b10000000) << 4 | (word & 0x7e00000000) >> 20 | (word & 0xf00) >> 7;
+        uint32_t imm_lo = (word >> 31) << 12 | (word & 0b10000000) << 4 | (word & 0x7e000000) >> 20 | (word & 0xf00) >> 7;
         uint32_t imm_u = (imm_lo >> 12) ? (0xffffe000 | imm_lo) : imm_lo;
         int32_t imm = *(int32_t *)&imm_u;
 

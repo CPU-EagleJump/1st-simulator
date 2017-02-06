@@ -104,6 +104,15 @@ void CPU::sub(uint32_t rd, uint32_t rs1, uint32_t rs2)
     inc_pc();
 }
 
+void CPU::or_(uint32_t rd, uint32_t rs1, uint32_t rs2)
+{
+    cycles++;
+
+    r[rd] = r[rs1] | r[rs2];
+    flush_r0();
+    inc_pc();
+}
+
 void CPU::fadd(uint32_t rd, uint32_t rs1, uint32_t rs2)
 {
     cycles++;
@@ -184,11 +193,21 @@ void CPU::fsgnjx(uint32_t rd, uint32_t rs1, uint32_t rs2)
     inc_pc();
 }
 
+void CPU::feq(uint32_t rd, uint32_t rs1, uint32_t rs2)
+{
+    cycles++;
+
+    r[rd] = f[rs1] == f[rs2];
+    flush_r0();
+    inc_pc();
+}
+
 void CPU::fle(uint32_t rd, uint32_t rs1, uint32_t rs2)
 {
     cycles++;
 
     r[rd] = f[rs1] <= f[rs2];
+    flush_r0();
     inc_pc();
 }
 
@@ -221,6 +240,25 @@ void CPU::addi(uint32_t rd, uint32_t rs, int32_t imm)
     cycles++;
 
     r[rd] = r[rs] + imm;
+    flush_r0();
+    inc_pc();
+}
+
+void CPU::slli(uint32_t rd, uint32_t rs, uint32_t shamt)
+{
+    cycles++;
+
+    r[rd] = r[rs] << shamt;
+    flush_r0();
+    inc_pc();
+}
+
+void CPU::srai(uint32_t rd, uint32_t rs, uint32_t shamt)
+{
+    cycles++;
+
+    int32_t res = (*(int32_t *)&r[rs]) >> shamt;
+    r[rd] = *(uint32_t *)&res;
     flush_r0();
     inc_pc();
 }
@@ -368,6 +406,7 @@ void CPU::lui(uint32_t rd, uint32_t imm_u)
     cycles++;
 
     r[rd] = imm_u | (r[rd] & 0x00000fff); // preserve the lowest 12 bits
+    flush_r0();
 
     inc_pc();
 }
@@ -399,6 +438,7 @@ void CPU::inb(uint32_t rd)
     char c;
     in_file.get(c);
     r[rd] = *(unsigned char *)&c; // clears upper 24 bits
+    flush_r0();
 
     inc_pc();
 }

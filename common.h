@@ -48,6 +48,7 @@ public:
     // R type
     void add(uint32_t rd, uint32_t rs1, uint32_t rs2);
     void sub(uint32_t rd, uint32_t rs1, uint32_t rs2);
+    void or_(uint32_t rd, uint32_t rs1, uint32_t rs2);
     void fadd(uint32_t rd, uint32_t rs1, uint32_t rs2);
     void fsub(uint32_t rd, uint32_t rs1, uint32_t rs2);
     void fmul(uint32_t rd, uint32_t rs1, uint32_t rs2);
@@ -55,11 +56,14 @@ public:
     void fsgnj(uint32_t rd, uint32_t rs1, uint32_t rs2);
     void fsgnjn(uint32_t rd, uint32_t rs1, uint32_t rs2);
     void fsgnjx(uint32_t rd, uint32_t rs1, uint32_t rs2);
+    void feq(uint32_t rd, uint32_t rs1, uint32_t rs2);
     void fle(uint32_t rd, uint32_t rs1, uint32_t rs2);
     void fcvt_s_w(uint32_t rd, uint32_t rs1);
     void fmv_s_x(uint32_t rd, uint32_t rs1);
     // I type
     void addi(uint32_t rd, uint32_t rs, int32_t imm);
+    void slli(uint32_t rd, uint32_t rs, uint32_t shamt);
+    void srai(uint32_t rd, uint32_t rs, uint32_t shamt);
     void lw(uint32_t rd, uint32_t rs, int32_t imm);
     void flw(uint32_t rd, uint32_t rs, int32_t imm);
     void jalr(uint32_t rd, uint32_t rs, int32_t imm);

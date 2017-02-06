@@ -23,7 +23,7 @@ private:
     vector<uint32_t> mem;
     uint32_t mem_size;
     bool halted_f, exception_f;
-    uint32_t cycles;
+    uint32_t clocks;
 
     bool debug_f;
 
@@ -39,6 +39,7 @@ public:
 
     uint32_t get_pc() { return pc; }
     uint32_t get_prev_pc() { return pc; }
+    uint32_t get_clocks() { return clocks; }
     bool is_halted() { return halted_f; }
     bool is_exception() { return exception_f; }
 

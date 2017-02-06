@@ -196,6 +196,7 @@ int main(int argc, char **argv)
 
         for (;;) {
             print_line_of_pc(cpu->get_pc());
+            cerr << "[" << cpu->get_clocks() << " clks] ";
             cerr << "> ";
             string cmd;
             getline(cin, cmd);

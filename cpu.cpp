@@ -22,7 +22,7 @@ CPU::CPU(uint32_t mem_size, vector<uint32_t> static_data, bool is_debug)
     copy(static_data.begin(), static_data.end(), mem.begin());
     halted_f = false;
     exception_f = false;
-    cycles = 0;
+    clocks = 0;
 
     debug_f = is_debug;
 }
@@ -49,7 +49,7 @@ void CPU::report_NaN_exception(uint32_t rd)
 
 void CPU::print_state()
 {
-    cerr << cycles << " cycles." << endl << endl;
+    cerr << "Elapsed "<< clocks << " clocks." << endl << endl;
     cerr << "PC = ";
     print_hex(pc);
     cerr << " (" << pc << ")" << endl;
@@ -86,7 +86,7 @@ void CPU::add(uint32_t rd, uint32_t rs1, uint32_t rs2)
 {
     if (debug_f)
         cerr << "add" << endl;
-    cycles++;
+    clocks++;
 
     r[rd] = r[rs1] + r[rs2];
     flush_r0();
@@ -97,7 +97,7 @@ void CPU::sub(uint32_t rd, uint32_t rs1, uint32_t rs2)
 {
     if (debug_f)
         cerr << "sub" << endl;
-    cycles++;
+    clocks++;
 
     r[rd] = r[rs1] - r[rs2];
     flush_r0();
@@ -106,7 +106,7 @@ void CPU::sub(uint32_t rd, uint32_t rs1, uint32_t rs2)
 
 void CPU::or_(uint32_t rd, uint32_t rs1, uint32_t rs2)
 {
-    cycles++;
+    clocks++;
 
     r[rd] = r[rs1] | r[rs2];
     flush_r0();
@@ -115,7 +115,7 @@ void CPU::or_(uint32_t rd, uint32_t rs1, uint32_t rs2)
 
 void CPU::fadd(uint32_t rd, uint32_t rs1, uint32_t rs2)
 {
-    cycles++;
+    clocks++;
 
     f[rd] = f[rs1] + f[rs2];
     if (isnan(f[rd]))
@@ -126,7 +126,7 @@ void CPU::fadd(uint32_t rd, uint32_t rs1, uint32_t rs2)
 
 void CPU::fsub(uint32_t rd, uint32_t rs1, uint32_t rs2)
 {
-    cycles++;
+    clocks++;
 
     f[rd] = f[rs1] - f[rs2];
     if (isnan(f[rd]))
@@ -137,7 +137,7 @@ void CPU::fsub(uint32_t rd, uint32_t rs1, uint32_t rs2)
 
 void CPU::fmul(uint32_t rd, uint32_t rs1, uint32_t rs2)
 {
-    cycles++;
+    clocks++;
 
     f[rd] = f[rs1] * f[rs2];
     if (isnan(f[rd]))
@@ -148,7 +148,7 @@ void CPU::fmul(uint32_t rd, uint32_t rs1, uint32_t rs2)
 
 void CPU::fdiv(uint32_t rd, uint32_t rs1, uint32_t rs2)
 {
-    cycles++;
+    clocks++;
 
     f[rd] = f[rs1] / f[rs2];
     if (isnan(f[rd]))
@@ -159,7 +159,7 @@ void CPU::fdiv(uint32_t rd, uint32_t rs1, uint32_t rs2)
 
 void CPU::fsgnj(uint32_t rd, uint32_t rs1, uint32_t rs2)
 {
-    cycles++;
+    clocks++;
 
     uint32_t res = ((*(uint32_t *)&f[rs1]) & 0x7fffffff) | ((*(uint32_t *)&f[rs2]) & 0x80000000);
     f[rd] = *(float *)&res;
@@ -171,7 +171,7 @@ void CPU::fsgnj(uint32_t rd, uint32_t rs1, uint32_t rs2)
 
 void CPU::fsgnjn(uint32_t rd, uint32_t rs1, uint32_t rs2)
 {
-    cycles++;
+    clocks++;
 
     uint32_t res = ((*(uint32_t *)&f[rs1]) & 0x7fffffff) | (~(*(uint32_t *)&f[rs2]) & 0x80000000);
     f[rd] = *(float *)&res;
@@ -183,7 +183,7 @@ void CPU::fsgnjn(uint32_t rd, uint32_t rs1, uint32_t rs2)
 
 void CPU::fsgnjx(uint32_t rd, uint32_t rs1, uint32_t rs2)
 {
-    cycles++;
+    clocks++;
 
     uint32_t res = ((*(uint32_t *)&f[rs1]) & 0x7fffffff) ^ ((*(uint32_t *)&f[rs2]) & 0x80000000);
     f[rd] = *(float *)&res;
@@ -195,7 +195,7 @@ void CPU::fsgnjx(uint32_t rd, uint32_t rs1, uint32_t rs2)
 
 void CPU::feq(uint32_t rd, uint32_t rs1, uint32_t rs2)
 {
-    cycles++;
+    clocks++;
 
     r[rd] = f[rs1] == f[rs2];
     flush_r0();
@@ -204,7 +204,7 @@ void CPU::feq(uint32_t rd, uint32_t rs1, uint32_t rs2)
 
 void CPU::fle(uint32_t rd, uint32_t rs1, uint32_t rs2)
 {
-    cycles++;
+    clocks++;
 
     r[rd] = f[rs1] <= f[rs2];
     flush_r0();
@@ -213,7 +213,7 @@ void CPU::fle(uint32_t rd, uint32_t rs1, uint32_t rs2)
 
 void CPU::fcvt_s_w(uint32_t rd, uint32_t rs1)
 {
-    cycles++;
+    clocks++;
 
     f[rd] = r[rs1];
     if (isnan(f[rd]))
@@ -224,7 +224,7 @@ void CPU::fcvt_s_w(uint32_t rd, uint32_t rs1)
 
 void CPU::fmv_s_x(uint32_t rd, uint32_t rs1)
 {
-    cycles++;
+    clocks++;
 
     f[rd] = *(float *)&r[rs1];
     if (isnan(f[rd]))
@@ -237,7 +237,7 @@ void CPU::addi(uint32_t rd, uint32_t rs, int32_t imm)
 {
     if (debug_f)
         cerr << "addi" << endl;
-    cycles++;
+    clocks++;
 
     r[rd] = r[rs] + imm;
     flush_r0();
@@ -246,7 +246,7 @@ void CPU::addi(uint32_t rd, uint32_t rs, int32_t imm)
 
 void CPU::slli(uint32_t rd, uint32_t rs, uint32_t shamt)
 {
-    cycles++;
+    clocks++;
 
     r[rd] = r[rs] << shamt;
     flush_r0();
@@ -255,7 +255,7 @@ void CPU::slli(uint32_t rd, uint32_t rs, uint32_t shamt)
 
 void CPU::srai(uint32_t rd, uint32_t rs, uint32_t shamt)
 {
-    cycles++;
+    clocks++;
 
     int32_t res = (*(int32_t *)&r[rs]) >> shamt;
     r[rd] = *(uint32_t *)&res;
@@ -267,7 +267,7 @@ void CPU::lw(uint32_t rd, uint32_t rs, int32_t imm)
 {
     if (debug_f)
         cerr << "lw" << endl;
-    cycles++;
+    clocks++;
 
     uint32_t addr = r[rs] + imm, idx = addr >> 2;
     if (idx < mem_size) {
@@ -286,7 +286,7 @@ void CPU::lw(uint32_t rd, uint32_t rs, int32_t imm)
 
 void CPU::flw(uint32_t rd, uint32_t rs, int32_t imm)
 {
-    cycles++;
+    clocks++;
 
     uint32_t addr = r[rs] + imm, idx = addr >> 2;
     if (idx < mem_size) {
@@ -308,7 +308,7 @@ void CPU::jalr(uint32_t rd, uint32_t rs, int32_t imm)
 {
     if (debug_f)
         cerr << "jalr" << endl;
-    cycles++;
+    clocks++;
 
     r[rd] = pc + WORD_SIZE;
     flush_r0();
@@ -319,7 +319,7 @@ void CPU::sw(uint32_t rs2, uint32_t rs1, int32_t imm)
 {
     if (debug_f)
         cerr << "sw" << endl;
-    cycles++;
+    clocks++;
 
     uint32_t addr = r[rs1] + imm, idx = addr >> 2;
     if (idx < mem_size) {
@@ -337,7 +337,7 @@ void CPU::sw(uint32_t rs2, uint32_t rs1, int32_t imm)
 
 void CPU::fsw(uint32_t rs2, uint32_t rs1, int32_t imm)
 {
-    cycles++;
+    clocks++;
 
     uint32_t addr = r[rs1] + imm, idx = addr >> 2;
     if (idx < mem_size) {
@@ -357,7 +357,7 @@ void CPU::beq(uint32_t rs1, uint32_t rs2, int32_t imm)
 {
     if (debug_f)
         cerr << "beq" << endl;
-    cycles++;
+    clocks++;
 
     if (r[rs1] == r[rs2])
         update_pc(pc + imm);
@@ -369,7 +369,7 @@ void CPU::bne(uint32_t rs1, uint32_t rs2, int32_t imm)
 {
     if (debug_f)
         cerr << "bne" << endl;
-    cycles++;
+    clocks++;
 
     if (r[rs1] != r[rs2])
         update_pc(pc + imm);
@@ -381,7 +381,7 @@ void CPU::blt(uint32_t rs1, uint32_t rs2, int32_t imm)
 {
     if (debug_f)
         cerr << "blt" << endl;
-    cycles++;
+    clocks++;
 
     if (*(int32_t *)(r + rs1) < *(int32_t *)(r + rs2))
         update_pc(pc + imm);
@@ -393,7 +393,7 @@ void CPU::bge(uint32_t rs1, uint32_t rs2, int32_t imm)
 {
     if (debug_f)
         cerr << "bge" << endl;
-    cycles++;
+    clocks++;
 
     if (*(int32_t *)(r + rs1) >= *(int32_t *)(r + rs2))
         update_pc(pc + imm);
@@ -403,7 +403,7 @@ void CPU::bge(uint32_t rs1, uint32_t rs2, int32_t imm)
 
 void CPU::lui(uint32_t rd, uint32_t imm_u)
 {
-    cycles++;
+    clocks++;
 
     r[rd] = imm_u | (r[rd] & 0x00000fff); // preserve the lowest 12 bits
     flush_r0();
@@ -415,7 +415,7 @@ void CPU::jal(uint32_t rd, int32_t imm)
 {
     if (debug_f)
         cerr << "jal" << endl;
-    cycles++;
+    clocks++;
 
     r[rd] = pc + WORD_SIZE;
     flush_r0();
@@ -426,14 +426,14 @@ void CPU::halt()
 {
     if (debug_f)
         cerr << "halt" << endl;
-    cycles++;
+    clocks++;
 
     halted_f = true;
 }
 
 void CPU::inb(uint32_t rd)
 {
-    cycles++;
+    clocks++;
 
     char c;
     in_file.get(c);
@@ -445,7 +445,7 @@ void CPU::inb(uint32_t rd)
 
 void CPU::outb(uint32_t rs2)
 {
-    cycles++;
+    clocks++;
 
     out_file.put((char)r[rs2]);
 

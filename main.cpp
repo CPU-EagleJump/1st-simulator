@@ -27,14 +27,6 @@ uint32_t read_word()
     return (uint32_t)bs[0] | ((uint32_t)bs[1]) << 8 | ((uint32_t)bs[2]) << 16 | ((uint32_t)bs[3]) << 24;
 }
 
-void print_line_of_pc(uint32_t pc)
-{
-    uint32_t idx = pc >> 2;
-    uint32_t cur_lnum = inst_lines[idx];
-    string cur_line = lines[cur_lnum - 1];
-    cerr << cur_lnum << ": " << cur_line << endl;
-}
-
 bool step_and_report()
 {
     bool res = step_exec(cpu, insts);
@@ -54,40 +46,6 @@ void exec_continue()
 {
     while(step_and_report())
         ;
-}
-
-bool process_command(string cmd_line)
-{
-    if (cmd_line == "")
-        cmd_line = "next";
-    vector<string> elems = split_string(cmd_line, " ");
-    string cmd = elems[0];
-    vector<string> args(elems.begin() + 1, elems.end());
-
-    if (cmd[0] == 'n') {
-        if (args.empty())
-            return step_and_report();
-        else {
-            int cnt = stoi(args[0]);
-            for (int i = 0; i < cnt; i++) {
-                if (!step_and_report())
-                    return false;
-            }
-            return true;
-        }
-    }
-    else if (cmd[0] == 'c') {
-        exec_continue();
-        return false;
-    }
-    else if (cmd[0] == 'q')
-        return false;
-    else if (cmd[0] == 'p')
-        cpu->print_state();
-    else
-        cerr << "Undefined command." << endl;
-
-    return true;
 }
 
 int main(int argc, char **argv)
@@ -195,9 +153,8 @@ int main(int argc, char **argv)
         }
 
         for (;;) {
-            print_line_of_pc(cpu->get_pc());
-            cerr << "[" << cpu->get_clocks() << " clks] ";
-            cerr << "> ";
+            print_prompt();
+
             string cmd;
             getline(cin, cmd);
             bool is_next = process_command(cmd);

@@ -5,7 +5,7 @@ TARGET := sim
 OBJS := $(patsubst %.cpp, %.o, $(wildcard *.cpp))
 
 
-$(TARGET): $(OBJS)
+$(TARGET): $(OBJS) common.h
 	$(CXX) -o $@ $(OBJS)
 
 .PHONY: test/%

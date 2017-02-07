@@ -18,5 +18,5 @@
 
 - `next`[count]
 - `continue`
-- `print`
+- `print`[arg]
 - `quit`

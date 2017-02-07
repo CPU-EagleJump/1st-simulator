@@ -24,6 +24,19 @@ vector<string> split_string(const string &str, const string &delims)
     return elems;
 }
 
+// num -> string of binary digits
+// // len must be < 32
+string num_to_bin(uint32_t num, int len = 32)
+{
+    string bin;
+
+    for (int i = len - 1; i >= 0; i--) {
+        bin += (num & (UINT32_C(1) << i)) ? '1' : '0';
+    }
+
+    return bin;
+}
+
 void print_hex(uint32_t n)
 {
     cerr << "0x" << hex << setw(8) << setfill('0') << n << dec;

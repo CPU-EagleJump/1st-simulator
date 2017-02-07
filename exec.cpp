@@ -7,7 +7,7 @@ bool step_exec(CPU *cpu, const vector<uint32_t> &insts)
 {
     uint32_t idx = cpu->get_pc() >> 2;
     if (idx >= insts.size()) {
-        print_line_of_pc(cpu->get_prev_pc());
+        print_line_of_text_addr(cpu->get_prev_pc());
         cerr << "PC is out of range." << endl << endl;
         return false;
     }
@@ -140,7 +140,7 @@ bool step_exec(CPU *cpu, const vector<uint32_t> &insts)
     }
 
     if (is_invalid) {
-        print_line_of_pc(cpu->get_pc());
+        print_line_of_text_addr(cpu->get_pc());
         cerr << "Invalid instruction." << endl << endl;
         return false;
     }

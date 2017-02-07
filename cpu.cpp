@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iostream>
 #include <iomanip>
+#include <stdexcept>
 
 using namespace std;
 
@@ -13,7 +14,7 @@ CPU::CPU(uint32_t mem_size, vector<uint32_t> static_data, bool is_debug)
     pc = 0;
     prev_pc = 0;
     r[0] = 0;
-    for (int i = 0; i < 32; i++) {
+    for (int i = 0; i < REG_LEN; i++) {
         r[i] = 0;
         f[i] = 0;
     }
@@ -31,6 +32,30 @@ CPU::~CPU()
 {
 }
 
+uint32_t CPU::get_r(uint32_t ri)
+{
+    if (!(ri < CPU::REG_LEN))
+        throw out_of_range("CPU::get_r");
+    return r[ri];
+}
+
+uint32_t CPU::get_f(uint32_t ri)
+{
+    if (!(ri < CPU::REG_LEN))
+        throw out_of_range("CPU::get_f");
+    return f[ri];
+}
+
+uint32_t CPU::get_mem(uint32_t addr)
+{
+    if (addr & 0b11)
+        throw invalid_argument("CPU::get_mem");
+    uint32_t idx = addr >> 2;
+    if (!(idx < mem_size))
+        throw out_of_range("CPU::get_mem");
+    return mem[idx];
+}
+
 void CPU::update_pc(uint32_t new_pc)
 {
     prev_pc = pc;
@@ -39,7 +64,7 @@ void CPU::update_pc(uint32_t new_pc)
 
 void CPU::report_NaN_exception(uint32_t rd)
 {
-    print_line_of_pc(pc);
+    print_line_of_text_addr(pc);
     cerr << "NaN value appeared at f";
     print_dec_2(rd);
     cerr << ".";
@@ -55,7 +80,7 @@ void CPU::print_state()
     cerr << " (" << pc << ")" << endl;
 
     cerr << "GPRs:" << endl;
-    for (int i = 0; i < 32; i++) {
+    for (int i = 0; i < REG_LEN; i++) {
         cerr << "x";
         print_dec_2(i);
         cerr << " = ";
@@ -68,7 +93,7 @@ void CPU::print_state()
     }
 
     cerr << "FPRs:" << endl;
-    for (int i = 0; i < 32; i++) {
+    for (int i = 0; i < REG_LEN; i++) {
         cerr << "f";
         print_dec_2(i);
         cerr << " = ";
@@ -275,7 +300,7 @@ void CPU::lw(uint32_t rd, uint32_t rs, int32_t imm)
         flush_r0();
         inc_pc();
     } else {
-        print_line_of_pc(pc);
+        print_line_of_text_addr(pc);
         cerr << "Invalid memory access. addr = ";
         print_hex(addr);
         cerr << " (" << addr << ")";
@@ -295,7 +320,7 @@ void CPU::flw(uint32_t rd, uint32_t rs, int32_t imm)
             report_NaN_exception(rd);
         inc_pc();
     } else {
-        print_line_of_pc(pc);
+        print_line_of_text_addr(pc);
         cerr << "Invalid memory access. addr = ";
         print_hex(addr);
         cerr << " (" << addr << ")";
@@ -326,7 +351,7 @@ void CPU::sw(uint32_t rs2, uint32_t rs1, int32_t imm)
         mem[idx] = r[rs2];
         inc_pc();
     } else {
-        print_line_of_pc(pc);
+        print_line_of_text_addr(pc);
         cerr << "Invalid memory access. addr = ";
         print_hex(addr);
         cerr << " (" << addr << ")";
@@ -344,7 +369,7 @@ void CPU::fsw(uint32_t rs2, uint32_t rs1, int32_t imm)
         mem[idx] = *(uint32_t *)&f[rs2];
         inc_pc();
     } else {
-        print_line_of_pc(pc);
+        print_line_of_text_addr(pc);
         cerr << "Invalid memory access. addr = ";
         print_hex(addr);
         cerr << " (" << addr << ")";

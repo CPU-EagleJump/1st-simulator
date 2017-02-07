@@ -1,3 +1,4 @@
+#include <set>
 #include <iostream>
 #include <stdexcept>
 
@@ -27,11 +28,27 @@ void print_line_of_text_addr(uint32_t addr)
     cerr << cur_lnum << ": " << cur_line << endl;
 }
 
+uint32_t text_addr_of_lnum(uint32_t lnum)
+{
+    uint32_t idx = distance(inst_lines.begin(), lower_bound(inst_lines.begin(), inst_lines.end(), lnum));
+    if (idx >= inst_lines.size())
+        throw out_of_range("text_addr_of_line_number");
+    return idx << 2;
+}
+
 void print_prompt()
 {
     print_line_of_text_addr(cpu->get_pc());
     cerr << "[" << cpu->get_clocks() << " clks] ";
     cerr << "> ";
+}
+
+void print_breakpoint(uint32_t bp)
+{
+    cerr << "(";
+    print_hex(bp);
+    cerr << ") ";
+    print_line_of_text_addr(bp);
 }
 
 void print_as_hex(uint32_t n)
@@ -61,6 +78,28 @@ void print_as_bin(uint32_t n)
     cerr << "(bin)   " << "0b" << num_to_bin(n) << endl;
 }
 
+set<uint32_t> breakpoints;
+
+bool is_breakpoint()
+{
+    return breakpoints.find(cpu->get_pc()) != breakpoints.end();
+}
+
+void add_breakpoint(uint32_t bp)
+{
+    breakpoints.insert(bp);
+}
+
+void delete_breakpoint(uint32_t bp)
+{
+    breakpoints.erase(bp); // doesn't care result
+}
+
+void delete_all_breakpoints()
+{
+    breakpoints.clear();
+}
+
 bool process_command(string cmd_line)
 {
     if (cmd_line == "")
@@ -73,21 +112,108 @@ bool process_command(string cmd_line)
         if (args.empty())
             return step_and_report();
         else {
-            int cnt = stoi(args[0]);
+            int cnt;
+            try {
+                cnt = stoi(args[0]);
+            } catch (...) {
+                cerr << "Invalid argument." << endl;
+                return true;
+            }
             for (int i = 0; i < cnt; i++) {
                 if (!step_and_report())
                     return false;
+                if (is_breakpoint()) {
+                    cerr << "Stop at breakpoint." << endl << endl;
+                    break;
+                }
             }
             return true;
         }
     }
     else if (cmd[0] == 'c') { // continue
-        exec_continue();
-        return false;
+        for (;;) {
+            if (!step_and_report())
+                return false;
+            if (is_breakpoint()) {
+                cerr << "Stop at breakpoint." << endl << endl;
+                break;
+            }
+        }
     }
     else if (cmd[0] == 'q') // quit
         return false;
-    else if (cmd[0] == 'p') {
+    else if (cmd[0] == 'b') { // breakpoint
+        if (args.empty()) {
+            add_breakpoint(cpu->get_pc());
+            cerr << "Add breakpoint." << endl << endl;
+        } else {
+            string arg = args[0];
+            if (arg == "-s") { // show breakpoint
+                if (breakpoints.size() == 0)
+                    cerr << "No";
+                else
+                    cerr << breakpoints.size();
+                cerr << " breakpoint(s)." << endl;
+
+                for (uint32_t bp : breakpoints)
+                    print_breakpoint(bp);
+                cerr << endl;
+            } else {
+                uint32_t bp;
+                if (isdigit(arg[0])) {
+                    try {
+                        bp = text_addr_of_lnum(stoul(arg));
+                    } catch (...) {
+                        cerr << "Invalid argument." << endl;
+                        return true;
+                    }
+                } else {
+                    try {
+                        bp = text_addr_of_lnum(lnum_of_label(arg));
+                    } catch (...) {
+                        cerr << "Invalid argument." << endl;
+                        return true;
+                    }
+                }
+                add_breakpoint(bp);
+                cerr << "Add breakpoint at" << endl;
+                print_breakpoint(bp);
+                cerr << endl;
+            }
+        }
+    }
+    else if (cmd[0] == 'd') { // delete breakpoint
+        if (args.empty())
+            cerr << "Please specify an argument." << endl;
+        else {
+            string arg = args[0];
+            if (arg == "-a") {
+                cerr << "Delete all breakpoints." << endl << endl;
+                delete_all_breakpoints();
+            } else {
+                uint32_t bp;
+                if (isdigit(arg[0])) {
+                    try {
+                        bp = text_addr_of_lnum(stoul(arg));
+                    } catch (...) {
+                        cerr << "Invalid argument." << endl;
+                        return true;
+                    }
+                } else {
+                    try {
+                        bp = text_addr_of_lnum(lnum_of_label(arg));
+                    } catch (...) {
+                        cerr << "Invalid argument." << endl;
+                        return true;
+                    }
+                }
+                delete_breakpoint(bp);
+                cerr << "Delete breakpoint at" << endl;
+                print_breakpoint(bp);
+                cerr << endl;
+            }
+        }
+    } else if (cmd[0] == 'p') {
         if (args.empty())
             cpu->print_state();
         else {

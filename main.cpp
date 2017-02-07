@@ -1,6 +1,7 @@
 #include <string>
 #include <fstream>
 #include <vector>
+#include <map>
 #include <cstdint>
 #include <iostream>
 
@@ -18,6 +19,8 @@ bool is_debug_mode;
 vector<uint32_t> insts, data;
 vector<uint32_t> inst_lines;
 vector<string> lines;
+map<string, uint32_t> label_lnum_map;
+
 CPU *cpu;
 
 uint32_t read_word()
@@ -25,6 +28,11 @@ uint32_t read_word()
     uint8_t bs[WORD_SIZE];
     zoi_file.read(reinterpret_cast<char *>(bs), WORD_SIZE);
     return (uint32_t)bs[0] | ((uint32_t)bs[1]) << 8 | ((uint32_t)bs[2]) << 16 | ((uint32_t)bs[3]) << 24;
+}
+
+uint32_t lnum_of_label(string label)
+{
+    return label_lnum_map.at(label);
 }
 
 bool step_and_report()
@@ -40,12 +48,6 @@ bool step_and_report()
         return false;
     }
     return true;
-}
-
-void exec_continue()
-{
-    while(step_and_report())
-        ;
 }
 
 int main(int argc, char **argv)
@@ -135,9 +137,15 @@ int main(int argc, char **argv)
         }
 
         string cur_line;
+        uint32_t cur_lnum = 0;
         while (!zoi_file.eof()) {
             getline(zoi_file, cur_line);
+            cur_lnum++;
             lines.push_back(cur_line);
+
+            auto es = split_string(cur_line, " #\t");
+            if (es.size() > 0 && es[0].back() == ':')
+                label_lnum_map[es[0].substr(0, es[0].size() - 1)] = cur_lnum;
         }
     }
 
@@ -161,8 +169,10 @@ int main(int argc, char **argv)
             if (!is_next)
                 break;
         }
-    } else
-        exec_continue();
+    } else {
+        while(step_and_report())
+            ;
+    }
 
     delete cpu;
 

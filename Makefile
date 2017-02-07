@@ -1,5 +1,5 @@
 CXX := g++
-CXXFLAGS := -Wall -O2 -std=c++1y
+CXXFLAGS := -Wall -Wno-strict-aliasing -O2 -std=c++1y
 
 TARGET := sim
 OBJS := $(patsubst %.cpp, %.o, $(wildcard *.cpp))

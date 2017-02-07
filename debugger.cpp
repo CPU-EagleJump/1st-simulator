@@ -111,8 +111,10 @@ bool process_command(string cmd_line)
                     ri = stoul(var_s.substr(1));
                     if (var_s[0] == 'x')
                         val = cpu->get_r(ri);
-                    else
-                        val = cpu->get_f(ri);
+                    else {
+                        float f = cpu->get_f(ri);
+                        val = *(uint32_t *)&f;
+                    }
                 } catch(...) {
                     cerr << "Invalid argument." << endl;
                     return true;

@@ -39,7 +39,7 @@ uint32_t CPU::get_r(uint32_t ri)
     return r[ri];
 }
 
-uint32_t CPU::get_f(uint32_t ri)
+float CPU::get_f(uint32_t ri)
 {
     if (!(ri < CPU::REG_LEN))
         throw out_of_range("CPU::get_f");

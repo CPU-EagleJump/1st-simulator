@@ -23,7 +23,7 @@ public:
     uint32_t get_pc() { return pc; }
     uint32_t get_prev_pc() { return prev_pc; }
     uint32_t get_r(uint32_t ri);
-    uint32_t get_f(uint32_t ri);
+    float get_f(uint32_t ri);
     uint32_t get_mem(uint32_t addr);
     uint32_t get_clocks() { return clocks; }
     bool is_halted() { return halted_f; }

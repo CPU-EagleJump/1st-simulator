@@ -1,4 +1,5 @@
 #include <cmath>
+#include <cfenv>
 #include <vector>
 #include <fstream>
 #include <iostream>
@@ -240,7 +241,8 @@ void CPU::fcvt_w_s(uint32_t rd, uint32_t rs1)
 {
     clocks++;
 
-    r[rd] = f[rs1];
+    fesetround(FE_TONEAREST);
+    r[rd] = (uint32_t)nearbyintf(f[rs1]);
 
     inc_pc();
 }

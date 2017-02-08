@@ -45,6 +45,12 @@ bool step_exec(CPU *cpu, const vector<uint32_t> &insts)
             cpu->fmul(rd, rs1, rs2);
         else if (funct7 == 0b0001100)
             cpu->fdiv(rd, rs1, rs2);
+        else if (funct7 == 0b0101100) {
+            if (rs2 == 0b00000)
+                cpu->fsqrt(rd, rs1);
+            else
+                is_invalid = true;
+        }
         else if (funct7 == 0b0010000) {
             if (funct3 == 0b000)
                 cpu->fsgnj(rd, rs1, rs2);

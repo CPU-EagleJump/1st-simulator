@@ -183,6 +183,17 @@ void CPU::fdiv(uint32_t rd, uint32_t rs1, uint32_t rs2)
     inc_pc();
 }
 
+void CPU::fsqrt(uint32_t rd, uint32_t rs1)
+{
+    clocks++;
+
+    f[rd] = sqrtf(f[rs1]);
+    if (isnan(f[rd]))
+        report_NaN_exception(rd);
+
+    inc_pc();
+}
+
 void CPU::fsgnj(uint32_t rd, uint32_t rs1, uint32_t rs2)
 {
     clocks++;

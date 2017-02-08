@@ -39,6 +39,7 @@ public:
     void fadd(uint32_t rd, uint32_t rs1, uint32_t rs2);
     void fsub(uint32_t rd, uint32_t rs1, uint32_t rs2);
     void fmul(uint32_t rd, uint32_t rs1, uint32_t rs2);
+    void fsqrt(uint32_t rd, uint32_t rs1);
     void fdiv(uint32_t rd, uint32_t rs1, uint32_t rs2);
     void fsgnj(uint32_t rd, uint32_t rs1, uint32_t rs2);
     void fsgnjn(uint32_t rd, uint32_t rs1, uint32_t rs2);

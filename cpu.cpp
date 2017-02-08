@@ -222,7 +222,7 @@ void CPU::fsgnjx(uint32_t rd, uint32_t rs1, uint32_t rs2)
 {
     clocks++;
 
-    uint32_t res = ((*(uint32_t *)&f[rs1]) & 0x7fffffff) ^ ((*(uint32_t *)&f[rs2]) & 0x80000000);
+    uint32_t res = ((*(uint32_t *)&f[rs1]) & 0x7fffffff) | (((*(uint32_t *)&f[rs1]) & 0x80000000) ^ ((*(uint32_t *)&f[rs2]) & 0x80000000));
     f[rd] = *(float *)&res;
     if (isnan(f[rd]))
         report_NaN_exception(rd);

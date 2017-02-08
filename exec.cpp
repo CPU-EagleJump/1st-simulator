@@ -55,6 +55,12 @@ bool step_exec(CPU *cpu, const vector<uint32_t> &insts)
             else
                 is_invalid = true;
         }
+        else if (funct7 == 0b1100000) {
+            if (rs2 == 0b00000)
+                cpu->fcvt_w_s(rd, rs1);
+            else
+                is_invalid = true;
+        }
         else if (funct7 == 0b1010000)
             if (funct3 == 0b010)
                 cpu->feq(rd, rs1, rs2);

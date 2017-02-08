@@ -45,6 +45,7 @@ public:
     void fsgnjx(uint32_t rd, uint32_t rs1, uint32_t rs2);
     void feq(uint32_t rd, uint32_t rs1, uint32_t rs2);
     void fle(uint32_t rd, uint32_t rs1, uint32_t rs2);
+    void fcvt_w_s(uint32_t rd, uint32_t rs1);
     void fcvt_s_w(uint32_t rd, uint32_t rs1);
     void fmv_s_x(uint32_t rd, uint32_t rs1);
     // I type

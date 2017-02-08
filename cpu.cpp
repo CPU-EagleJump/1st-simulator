@@ -236,6 +236,15 @@ void CPU::fle(uint32_t rd, uint32_t rs1, uint32_t rs2)
     inc_pc();
 }
 
+void CPU::fcvt_w_s(uint32_t rd, uint32_t rs1)
+{
+    clocks++;
+
+    r[rd] = f[rs1];
+
+    inc_pc();
+}
+
 void CPU::fcvt_s_w(uint32_t rd, uint32_t rs1)
 {
     clocks++;

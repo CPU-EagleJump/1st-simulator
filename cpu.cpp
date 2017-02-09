@@ -253,7 +253,7 @@ void CPU::fcvt_w_s(uint32_t rd, uint32_t rs1)
     clocks++;
 
     fesetround(FE_TONEAREST);
-    r[rd] = (uint32_t)nearbyintf(f[rs1]);
+    r[rd] = (uint32_t)((int32_t)nearbyintf(f[rs1]));
     flush_r0();
 
     inc_pc();

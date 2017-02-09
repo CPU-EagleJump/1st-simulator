@@ -263,7 +263,7 @@ void CPU::fcvt_s_w(uint32_t rd, uint32_t rs1)
 {
     clocks++;
 
-    f[rd] = r[rs1];
+    f[rd] = (int32_t)r[rs1];
     if (isnan(f[rd]))
         report_NaN_exception(rd);
 

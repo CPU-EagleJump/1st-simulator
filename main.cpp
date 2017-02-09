@@ -21,7 +21,7 @@ vector<uint32_t> inst_lines;
 vector<string> lines, labels;
 map<string, uint32_t> label_lnum_map;
 
-set<uint32_t> unreached_addrs;
+vector<bool> is_unreached_index;
 
 CPU *cpu;
 
@@ -127,11 +127,10 @@ int main(int argc, char **argv)
         data[i] = read_word();
     }
 
+    is_unreached_index = vector<bool>(text_len, true);
     insts = vector<uint32_t>(text_len);
     for (uint32_t i = 0; i < text_len; i++) {
         insts[i] = read_word();
-        uint32_t addr = i << 2;
-        unreached_addrs.insert(addr);
     }
 
     if (is_debug_file) {
@@ -183,6 +182,12 @@ int main(int argc, char **argv)
 
     delete cpu;
 
+    vector<uint32_t> unreached_addrs;
+    for (uint32_t i = 0; i < text_len; i++) {
+        if (is_unreached_index[i])
+            unreached_addrs.push_back(i << 2);
+    }
+
     if (unreached_addrs.empty())
         cerr << "No";
     else
@@ -196,7 +201,7 @@ int main(int argc, char **argv)
 
     vector<string> unreached_labels;
     for (string label : labels) {
-        if (unreached_addrs.find(text_addr_of_lnum(lnum_of_label(label))) != unreached_addrs.end())
+        if (is_unreached_index[text_addr_of_lnum(lnum_of_label(label)) >> 2])
             unreached_labels.push_back(label);
     }
 

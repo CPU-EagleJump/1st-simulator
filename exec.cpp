@@ -12,8 +12,7 @@ bool step_exec(CPU *cpu, const vector<uint32_t> &insts)
         cerr << "PC is out of range." << endl << endl;
         return false;
     }
-
-    unreached_addrs.erase(cur_addr);
+    is_unreached_index[idx] = false;
 
     uint32_t word = insts[idx];
 

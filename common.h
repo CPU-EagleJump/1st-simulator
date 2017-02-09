@@ -114,7 +114,7 @@ extern vector<uint32_t> insts, inst_lines;
 extern vector<string> lines;
 extern CPU *cpu;
 uint32_t lnum_of_label(string label);
-extern set<uint32_t> unreached_addrs;
+extern vector<bool> is_unreached_index;
 bool step_and_report();
 
 #endif

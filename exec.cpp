@@ -155,7 +155,8 @@ bool step_exec(CPU *cpu, const vector<uint32_t> &insts)
 
     if (cpu->is_exception())
         return false;
-    else
-        return true;
+
+    cpu->inc_clocks();
+    return true;
 }
 

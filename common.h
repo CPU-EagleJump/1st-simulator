@@ -27,12 +27,13 @@ public:
     uint32_t get_r(uint32_t ri);
     float get_f(uint32_t ri);
     uint32_t get_mem(uint32_t addr);
-    uint32_t get_clocks() { return clocks; }
+    uint64_t get_clocks() { return clocks; }
     bool is_halted() { return halted_f; }
     bool is_exception() { return exception_f; }
 
     void print_state();
-    void report_NaN_exception(uint32_t rd);
+
+    void inc_clocks() { clocks++; }
 
     // R type
     void add(uint32_t rd, uint32_t rs1, uint32_t rs2);
@@ -82,14 +83,14 @@ private:
     vector<uint32_t> mem;
     uint32_t mem_size;
     bool halted_f, exception_f;
-    uint32_t clocks;
+    uint64_t clocks;
 
     bool debug_f;
 
+    void report_NaN_exception(uint32_t rd);
     void update_pc(uint32_t new_pc);
     void inc_pc() { update_pc(pc + WORD_SIZE); }
     void flush_r0() { r[0] = 0; }
-
 };
 
 // exec.cpp

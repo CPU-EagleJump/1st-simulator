@@ -2,6 +2,7 @@
 #define _COMMON_H_
 
 #include <vector>
+#include <set>
 #include <string>
 #include <cstdint>
 
@@ -11,6 +12,7 @@ extern const uint32_t WORD_SIZE;
 // debugger.cpp
 void print_prompt();
 void print_line_of_text_addr(uint32_t addr);
+uint32_t text_addr_of_lnum(uint32_t lnum);
 bool process_command(string cmd_line);
 
 // cpu.cpp
@@ -109,6 +111,7 @@ extern ifstream in_file;
 extern ofstream out_file;
 extern vector<uint32_t> insts, inst_lines;
 extern vector<string> lines;
+extern set<uint32_t> unreached_lines;
 extern CPU *cpu;
 uint32_t lnum_of_label(string label);
 bool step_and_report();

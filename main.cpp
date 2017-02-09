@@ -21,6 +21,8 @@ vector<uint32_t> inst_lines;
 vector<string> lines;
 map<string, uint32_t> label_lnum_map;
 
+set<uint32_t> unreached_lines;
+
 CPU *cpu;
 
 uint32_t read_word()
@@ -134,6 +136,7 @@ int main(int argc, char **argv)
         inst_lines = vector<uint32_t>(text_len); // 1-origin
         for (uint32_t i = 0; i < text_len; i++) {
             inst_lines[i] = read_word();
+            unreached_lines.insert(inst_lines[i]);
         }
 
         string cur_line;
@@ -175,6 +178,16 @@ int main(int argc, char **argv)
     }
 
     delete cpu;
+
+    if (unreached_lines.empty())
+        cerr << "No";
+    else
+        cerr << unreached_lines.size();
+    cerr << " unreached lines." << endl << endl;
+
+    for (uint32_t lnum : unreached_lines) {
+        cerr << lnum << ": " << lines[lnum - 1] << endl;
+    }
 
     return 0;
 }

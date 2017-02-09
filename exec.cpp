@@ -11,6 +11,9 @@ bool step_exec(CPU *cpu, const vector<uint32_t> &insts)
         cerr << "PC is out of range." << endl << endl;
         return false;
     }
+
+    unreached_lines.erase(inst_lines[idx]);
+
     uint32_t word = insts[idx];
 
     uint32_t opcode, rd, funct3, funct7, rs1, rs2;

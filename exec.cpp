@@ -32,25 +32,21 @@ bool step_exec(CPU *cpu, const vector<uint32_t> &insts)
             else
                 is_invalid = true;
         }
-        else if (funct3 == 0b110)
+        else if (funct3 == 0b110 && funct7 == 0b0000000)
             cpu->or_(rd, rs1, rs2);
         else
             is_invalid = true;
     } else if (opcode == 0b1010011) { // RV32F, R type
-        if (funct7 == 0b0000000)
+        if (funct7 == 0b0000000 && funct3 == 0b000)
             cpu->fadd(rd, rs1, rs2);
-        else if (funct7 == 0b0000100)
+        else if (funct7 == 0b0000100 && funct3 == 0b000)
             cpu->fsub(rd, rs1, rs2);
-        else if (funct7 == 0b0001000)
+        else if (funct7 == 0b0001000 && funct3 == 0b000)
             cpu->fmul(rd, rs1, rs2);
-        else if (funct7 == 0b0001100)
+        else if (funct7 == 0b0001100 && funct3 == 0b000)
             cpu->fdiv(rd, rs1, rs2);
-        else if (funct7 == 0b0101100) {
-            if (rs2 == 0b00000)
-                cpu->fsqrt(rd, rs1);
-            else
-                is_invalid = true;
-        }
+        else if (funct7 == 0b0101100 && funct3 == 0b000 && rs2 == 0b00000)
+            cpu->fsqrt(rd, rs1);
         else if (funct7 == 0b0010000) {
             if (funct3 == 0b000)
                 cpu->fsgnj(rd, rs1, rs2);
@@ -61,7 +57,7 @@ bool step_exec(CPU *cpu, const vector<uint32_t> &insts)
             else
                 is_invalid = true;
         }
-        else if (funct7 == 0b1100000) {
+        else if (funct7 == 0b1100000 && funct3 == 0b000) {
             if (rs2 == 0b00000)
                 cpu->fcvt_w_s(rd, rs1);
             else
@@ -74,9 +70,9 @@ bool step_exec(CPU *cpu, const vector<uint32_t> &insts)
                 cpu->fle(rd, rs1, rs2);
             else
                 is_invalid = true;
-        else if (funct7 == 0b1101000)
+        else if (funct7 == 0b1101000 && funct3 == 0b000 && rs2 == 0b00000)
             cpu->fcvt_s_w(rd, rs1);
-        else if (funct7 == 0b1111000)
+        else if (funct7 == 0b1111000 && funct3 == 0b000 && rs2 == 0b00000)
             cpu->fmv_s_x(rd, rs1);
         else
             is_invalid = true;
@@ -85,9 +81,9 @@ bool step_exec(CPU *cpu, const vector<uint32_t> &insts)
         uint32_t imm_u = (imm_lo >> 11) ? (0xfffff000 | imm_lo) : imm_lo; // sign extension
         int32_t imm = *(int32_t *)&imm_u;
 
-        if (opcode == 0b0100011)
+        if (opcode == 0b0100011 && funct3 == 0b010)
             cpu->sw(rs2, rs1, imm);
-        else if (opcode == 0b0100111)
+        else if (opcode == 0b0100111 && funct3 == 0b010)
             cpu->fsw(rs2, rs1, imm);
         else
             is_invalid = true;
@@ -115,11 +111,11 @@ bool step_exec(CPU *cpu, const vector<uint32_t> &insts)
         int32_t imm = *(int32_t *)&imm_u;
 
         cpu->jal(rd, imm);
-    } else if (opcode == 0) {
+    } else if (word == 0) {
         cpu->halt();
-    } else if (opcode == 0b0000010) {
+    } else if (opcode == 0b0000010 && funct7 == 0 && rs2 == 0 && rs1 == 0 && funct3 == 0) {
         cpu->inb(rd);
-    } else if (opcode == 0b0000110) {
+    } else if (opcode == 0b0000110 && funct7 == 0 && rs1 == 0 && funct3 == 0 && rd == 0) {
         cpu->outb(rs2);
     } else { // I type
         uint32_t imm_lo = word >> 20;
@@ -130,22 +126,18 @@ bool step_exec(CPU *cpu, const vector<uint32_t> &insts)
         if (opcode == 0b0010011) {
             if (funct3 == 0b000)
                 cpu->addi(rd, rs1, imm);
-            else if (funct3 == 0b001)
+            else if (funct3 == 0b001 && funct7 == 0b0000000)
                 cpu->slli(rd, rs1, shamt);
-            else if (funct3 == 0b101) {
-                if (funct7 == 0b0100000)
-                    cpu->srai(rd, rs1, shamt);
-                else
-                    is_invalid = true;
-            }
+            else if (funct3 == 0b101 && funct7 == 0b0100000)
+                cpu->srai(rd, rs1, shamt);
             else
                 is_invalid = true;
         }
-        else if (opcode == 0b0000011)
+        else if (opcode == 0b0000011 && funct3 == 0b010)
             cpu->lw(rd, rs1, imm);
-        else if (opcode == 0b0000111)
+        else if (opcode == 0b0000111 && funct3 == 0b010)
             cpu->flw(rd, rs1, imm);
-        else if (opcode == 0b1100111)
+        else if (opcode == 0b1100111 && funct3 == 0b000)
             cpu->jalr(rd, rs1, imm);
         else
             is_invalid = true;

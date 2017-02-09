@@ -19,7 +19,7 @@ bool process_command(string cmd_line);
 class CPU
 {
 public:
-    CPU(uint32_t mem_size, vector<uint32_t> static_data, bool is_debug);
+    CPU(uint32_t mem_size, vector<uint32_t> static_data);
     ~CPU();
 
     uint32_t get_pc() { return pc; }

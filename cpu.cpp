@@ -10,7 +10,7 @@ using namespace std;
 
 #include "common.h"
 
-CPU::CPU(uint32_t mem_size, vector<uint32_t> static_data, bool is_debug)
+CPU::CPU(uint32_t mem_size, vector<uint32_t> static_data)
 {
     pc = 0;
     prev_pc = 0;
@@ -25,8 +25,6 @@ CPU::CPU(uint32_t mem_size, vector<uint32_t> static_data, bool is_debug)
     halted_f = false;
     exception_f = false;
     clocks = 0;
-
-    debug_f = is_debug;
 }
 
 CPU::~CPU()
@@ -110,8 +108,6 @@ void CPU::print_state()
 
 void CPU::add(uint32_t rd, uint32_t rs1, uint32_t rs2)
 {
-    if (debug_f)
-        cerr << "add" << endl;
     clocks++;
 
     r[rd] = r[rs1] + r[rs2];
@@ -121,8 +117,6 @@ void CPU::add(uint32_t rd, uint32_t rs1, uint32_t rs2)
 
 void CPU::sub(uint32_t rd, uint32_t rs1, uint32_t rs2)
 {
-    if (debug_f)
-        cerr << "sub" << endl;
     clocks++;
 
     r[rd] = r[rs1] - r[rs2];
@@ -283,8 +277,6 @@ void CPU::fmv_s_x(uint32_t rd, uint32_t rs1)
 
 void CPU::addi(uint32_t rd, uint32_t rs, int32_t imm)
 {
-    if (debug_f)
-        cerr << "addi" << endl;
     clocks++;
 
     r[rd] = r[rs] + imm;
@@ -313,8 +305,6 @@ void CPU::srai(uint32_t rd, uint32_t rs, uint32_t shamt)
 
 void CPU::lw(uint32_t rd, uint32_t rs, int32_t imm)
 {
-    if (debug_f)
-        cerr << "lw" << endl;
     clocks++;
 
     uint32_t addr = r[rs] + imm, idx = addr >> 2;
@@ -354,8 +344,6 @@ void CPU::flw(uint32_t rd, uint32_t rs, int32_t imm)
 
 void CPU::jalr(uint32_t rd, uint32_t rs, int32_t imm)
 {
-    if (debug_f)
-        cerr << "jalr" << endl;
     clocks++;
 
     r[rd] = pc + WORD_SIZE;
@@ -365,8 +353,6 @@ void CPU::jalr(uint32_t rd, uint32_t rs, int32_t imm)
 
 void CPU::sw(uint32_t rs2, uint32_t rs1, int32_t imm)
 {
-    if (debug_f)
-        cerr << "sw" << endl;
     clocks++;
 
     uint32_t addr = r[rs1] + imm, idx = addr >> 2;
@@ -403,8 +389,6 @@ void CPU::fsw(uint32_t rs2, uint32_t rs1, int32_t imm)
 
 void CPU::beq(uint32_t rs1, uint32_t rs2, int32_t imm)
 {
-    if (debug_f)
-        cerr << "beq" << endl;
     clocks++;
 
     if (r[rs1] == r[rs2])
@@ -415,8 +399,6 @@ void CPU::beq(uint32_t rs1, uint32_t rs2, int32_t imm)
 
 void CPU::bne(uint32_t rs1, uint32_t rs2, int32_t imm)
 {
-    if (debug_f)
-        cerr << "bne" << endl;
     clocks++;
 
     if (r[rs1] != r[rs2])
@@ -427,8 +409,6 @@ void CPU::bne(uint32_t rs1, uint32_t rs2, int32_t imm)
 
 void CPU::blt(uint32_t rs1, uint32_t rs2, int32_t imm)
 {
-    if (debug_f)
-        cerr << "blt" << endl;
     clocks++;
 
     if (*(int32_t *)(r + rs1) < *(int32_t *)(r + rs2))
@@ -439,8 +419,6 @@ void CPU::blt(uint32_t rs1, uint32_t rs2, int32_t imm)
 
 void CPU::bge(uint32_t rs1, uint32_t rs2, int32_t imm)
 {
-    if (debug_f)
-        cerr << "bge" << endl;
     clocks++;
 
     if (*(int32_t *)(r + rs1) >= *(int32_t *)(r + rs2))
@@ -461,8 +439,6 @@ void CPU::lui(uint32_t rd, uint32_t imm_u)
 
 void CPU::jal(uint32_t rd, int32_t imm)
 {
-    if (debug_f)
-        cerr << "jal" << endl;
     clocks++;
 
     r[rd] = pc + WORD_SIZE;
@@ -472,8 +448,6 @@ void CPU::jal(uint32_t rd, int32_t imm)
 
 void CPU::halt()
 {
-    if (debug_f)
-        cerr << "halt" << endl;
     clocks++;
 
     halted_f = true;

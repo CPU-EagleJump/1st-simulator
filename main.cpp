@@ -159,7 +159,7 @@ int main(int argc, char **argv)
     zoi_file.close();
 
 
-    cpu = new CPU(MEM_SIZE, data, false);
+    cpu = new CPU(MEM_SIZE, data);
 
     if (is_debug_mode) {
         if (!is_debug_file) {

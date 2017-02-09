@@ -18,10 +18,10 @@ bool is_debug_mode;
 
 vector<uint32_t> insts, data;
 vector<uint32_t> inst_lines;
-vector<string> lines;
+vector<string> lines, labels;
 map<string, uint32_t> label_lnum_map;
 
-set<uint32_t> unreached_lines;
+set<uint32_t> unreached_addrs;
 
 CPU *cpu;
 
@@ -130,13 +130,14 @@ int main(int argc, char **argv)
     insts = vector<uint32_t>(text_len);
     for (uint32_t i = 0; i < text_len; i++) {
         insts[i] = read_word();
+        uint32_t addr = i << 2;
+        unreached_addrs.insert(addr);
     }
 
     if (is_debug_file) {
         inst_lines = vector<uint32_t>(text_len); // 1-origin
         for (uint32_t i = 0; i < text_len; i++) {
             inst_lines[i] = read_word();
-            unreached_lines.insert(inst_lines[i]);
         }
 
         string cur_line;
@@ -147,8 +148,11 @@ int main(int argc, char **argv)
             lines.push_back(cur_line);
 
             auto es = split_string(cur_line, " #\t");
-            if (es.size() > 0 && es[0].back() == ':')
-                label_lnum_map[es[0].substr(0, es[0].size() - 1)] = cur_lnum;
+            if (es.size() > 0 && es[0].back() == ':') {
+                string label = es[0].substr(0, es[0].size() - 1);
+                labels.push_back(label);
+                label_lnum_map[label] = cur_lnum;
+            }
         }
     }
 
@@ -179,15 +183,31 @@ int main(int argc, char **argv)
 
     delete cpu;
 
-    if (unreached_lines.empty())
+    if (unreached_addrs.empty())
         cerr << "No";
     else
-        cerr << unreached_lines.size();
+        cerr << unreached_addrs.size();
     cerr << " unreached lines." << endl << endl;
 
-    for (uint32_t lnum : unreached_lines) {
-        cerr << lnum << ": " << lines[lnum - 1] << endl;
+    for (uint32_t addr : unreached_addrs) {
+        print_line_of_text_addr(addr);
     }
+    cerr << endl;
+
+    vector<string> unreached_labels;
+    for (string label : labels) {
+        if (unreached_addrs.find(text_addr_of_lnum(lnum_of_label(label))) != unreached_addrs.end())
+            unreached_labels.push_back(label);
+    }
+
+    if (unreached_labels.empty())
+        cerr << "No";
+    else
+        cerr << unreached_labels.size();
+    cerr << " unreached labels." << endl << endl;
+
+    for (string label : unreached_labels)
+        cerr << label << endl;
 
     return 0;
 }

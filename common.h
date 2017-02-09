@@ -111,9 +111,9 @@ extern ifstream in_file;
 extern ofstream out_file;
 extern vector<uint32_t> insts, inst_lines;
 extern vector<string> lines;
-extern set<uint32_t> unreached_lines;
 extern CPU *cpu;
 uint32_t lnum_of_label(string label);
+extern set<uint32_t> unreached_addrs;
 bool step_and_report();
 
 #endif

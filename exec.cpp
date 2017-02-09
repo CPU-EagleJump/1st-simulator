@@ -5,14 +5,15 @@
 
 bool step_exec(CPU *cpu, const vector<uint32_t> &insts)
 {
-    uint32_t idx = cpu->get_pc() >> 2;
+    uint32_t cur_addr = cpu->get_pc();
+    uint32_t idx = cur_addr >> 2;
     if (idx >= insts.size()) {
         print_line_of_text_addr(cpu->get_prev_pc());
         cerr << "PC is out of range." << endl << endl;
         return false;
     }
 
-    unreached_lines.erase(inst_lines[idx]);
+    unreached_addrs.erase(cur_addr);
 
     uint32_t word = insts[idx];
 

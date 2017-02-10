@@ -10,13 +10,28 @@
 
 ## Usage
 
-	$ ./sim ganbaru.zoi in.bin
+	$ ./sim ganbaru.zoi in.bin [options]
 
-	$ ./sim -d ganbaru.zoi in.bin
+### Options
+
+- `-d`  
+Debug mode
+
+- `-show-last`  
+Show last CPU status
+
+- `-show-ulines`  
+Show unreached lines
+
+- `-show-ulabels`  
+Show unreached labels
+
+- `-silent`
+- `-verbose`
 
 ### Commands in debug mode
 
-- `next`[count]
+- `next [count]`
 - `continue`
-- `print`[arg]
+- `print [arg]`
 - `quit`

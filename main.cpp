@@ -2,6 +2,7 @@
 #include <fstream>
 #include <vector>
 #include <map>
+#include <set>
 #include <cstdint>
 #include <iostream>
 
@@ -13,7 +14,6 @@ const uint32_t WORD_SIZE = 4;
 const uint32_t MEM_SIZE = 0x1000000; // 64 MiB
 
 ifstream zoi_file, in_file;
-bool is_debug_mode;
 
 vector<uint32_t> insts, data;
 vector<uint32_t> inst_lines;
@@ -36,30 +36,76 @@ uint32_t lnum_of_label(string label)
     return label_lnum_map.at(label);
 }
 
-bool step_and_report()
+bool step_and_report(bool is_show_halted)
 {
     bool res = step_exec(cpu, insts);
-    if (!res) {
-        cerr << "Execution interrupted." << endl << endl;
+    if (!res || cpu->is_exception()) {
+        cerr << "Execution interrupted." << endl;
         cpu->print_state();
         return false;
     } else if (cpu->is_halted()) {
-        cerr << "Execution finished." << endl << endl;
-        cpu->print_state();
+        if (is_show_halted) {
+            cerr << "Execution finished." << endl;
+            cpu->print_state();
+        }
         return false;
     }
     return true;
 }
 
+void show_unreached_lines()
+{
+    cerr << endl << "[Unreached Lines]" << endl;
+
+    vector<uint32_t> unreached_addrs;
+    for (uint32_t i = 0; i < is_unreached_index.size(); i++) {
+        if (is_unreached_index[i])
+            unreached_addrs.push_back(i << 2);
+    }
+
+    if (unreached_addrs.empty())
+        cerr << "No";
+    else
+        cerr << unreached_addrs.size();
+    cerr << " unreached lines." << endl << endl;
+
+    for (uint32_t addr : unreached_addrs) {
+        print_line_of_text_addr(addr);
+    }
+}
+
+void show_unreached_labels()
+{
+    cerr << endl << "[Unreached Labels]" << endl;
+
+    vector<string> unreached_labels;
+    for (string label : labels) {
+        if (is_unreached_index[text_addr_of_lnum(lnum_of_label(label)) >> 2])
+            unreached_labels.push_back(label);
+    }
+
+    if (unreached_labels.empty())
+        cerr << "No";
+    else
+        cerr << unreached_labels.size();
+    cerr << " unreached labels." << endl << endl;
+
+    for (string label : unreached_labels)
+        cerr << label << endl;
+}
+
 int main(int argc, char **argv)
 {
-    vector<string> params, options;
+    vector<string> params;
+    set<string> options;
     for (int i = 1; i < argc; i++) {
         if (argv[i][0] == '-')
-            options.push_back(argv[i]);
+            options.insert(argv[i]);
         else
             params.push_back(argv[i]);
     }
+
+    // params
 
     if (params.size() < 2) {
         if (params.size() == 0)
@@ -87,10 +133,33 @@ int main(int argc, char **argv)
         exit(1);
     }
 
-    is_debug_mode = false;
-    for (string opt : options)
-        if (opt == "-d")
-            is_debug_mode = true;
+    // options
+
+    bool is_debug_mode = false;
+    bool is_silent = false;
+    bool is_show_last_state = false, is_show_ulines = false, is_show_ulabels = false;
+
+    if (options.count("-d"))
+        is_debug_mode = true;
+    if (options.count("-show-last"))
+        is_show_last_state = true;
+    if (options.count("-show-ulines"))
+        is_show_ulines = true;
+    if (options.count("-show-ulabels"))
+        is_show_ulabels = true;
+
+    if (options.count("-silent")) {
+        is_silent = true;
+        is_show_last_state = false;
+        is_show_ulines = false;
+        is_show_ulabels = false;
+    }
+    if (options.count("-verbose")) {
+        is_silent = false;
+        is_show_last_state = true;
+        is_show_ulines = true;
+        is_show_ulabels = true;
+    }
 
     bool is_debug_file = false;
     char magic[4];
@@ -166,43 +235,22 @@ int main(int argc, char **argv)
                 break;
         }
     } else {
-        while(step_and_report())
+        while(step_and_report(is_show_last_state))
             ;
+        if (cpu->is_halted()) {
+            if (!is_show_last_state && !is_silent) {
+                cerr << "Execution finished." << endl;
+                cerr << "Elapsed "<< cpu->get_clocks() << " clocks." << endl;
+            }
+        }
     }
 
     delete cpu;
 
-    vector<uint32_t> unreached_addrs;
-    for (uint32_t i = 0; i < text_len; i++) {
-        if (is_unreached_index[i])
-            unreached_addrs.push_back(i << 2);
-    }
-
-    if (unreached_addrs.empty())
-        cerr << "No";
-    else
-        cerr << unreached_addrs.size();
-    cerr << " unreached lines." << endl << endl;
-
-    for (uint32_t addr : unreached_addrs) {
-        print_line_of_text_addr(addr);
-    }
-    cerr << endl;
-
-    vector<string> unreached_labels;
-    for (string label : labels) {
-        if (is_unreached_index[text_addr_of_lnum(lnum_of_label(label)) >> 2])
-            unreached_labels.push_back(label);
-    }
-
-    if (unreached_labels.empty())
-        cerr << "No";
-    else
-        cerr << unreached_labels.size();
-    cerr << " unreached labels." << endl << endl;
-
-    for (string label : unreached_labels)
-        cerr << label << endl;
+    if (is_show_ulines)
+        show_unreached_lines();
+    if (is_show_ulabels)
+        show_unreached_labels();
 
     return 0;
 }

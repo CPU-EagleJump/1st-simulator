@@ -110,7 +110,7 @@ bool process_command(string cmd_line)
 
     if (cmd[0] == 'n') { // next
         if (args.empty())
-            return step_and_report();
+            return step_and_report(true);
         else {
             int cnt;
             try {
@@ -120,7 +120,7 @@ bool process_command(string cmd_line)
                 return true;
             }
             for (int i = 0; i < cnt; i++) {
-                if (!step_and_report())
+                if (!step_and_report(true))
                     return false;
                 if (is_breakpoint()) {
                     cerr << "Stop at breakpoint." << endl << endl;
@@ -132,7 +132,7 @@ bool process_command(string cmd_line)
     }
     else if (cmd[0] == 'c') { // continue
         for (;;) {
-            if (!step_and_report())
+            if (!step_and_report(true))
                 return false;
             if (is_breakpoint()) {
                 cerr << "Stop at breakpoint." << endl << endl;

@@ -114,7 +114,7 @@ extern vector<string> lines;
 extern CPU *cpu;
 uint32_t lnum_of_label(string label);
 extern vector<bool> is_unreached_index;
-bool step_and_report();
+bool step_and_report(bool is_show_halted);
 
 #endif
 

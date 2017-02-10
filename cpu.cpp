@@ -73,6 +73,7 @@ void CPU::report_NaN_exception(uint32_t rd)
 
 void CPU::print_state()
 {
+    cerr << endl << "[CPU State]" << endl;
     cerr << "Elapsed "<< clocks << " clocks." << endl << endl;
     cerr << "PC = ";
     print_hex(pc);
@@ -103,7 +104,6 @@ void CPU::print_state()
         else
             cerr << " ";
     }
-    cerr << endl;
 }
 
 void CPU::add(uint32_t rd, uint32_t rs1, uint32_t rs2)

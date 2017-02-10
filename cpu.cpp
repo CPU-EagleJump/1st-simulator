@@ -403,7 +403,7 @@ void CPU::inb(uint32_t rd)
 
 void CPU::outb(uint32_t rs2)
 {
-    out_file.put((char)r[rs2]);
+    cout << (char)r[rs2];
 
     inc_pc();
 }

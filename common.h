@@ -109,7 +109,6 @@ void report_warning(string message);
 
 // main.cpp
 extern ifstream in_file;
-extern ofstream out_file;
 extern vector<uint32_t> insts, inst_lines;
 extern vector<string> lines;
 extern CPU *cpu;

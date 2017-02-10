@@ -10,9 +10,9 @@
 
 ## Usage
 
-	$ ./sim ganbaru.zoi in.bin out.bin
+	$ ./sim ganbaru.zoi in.bin
 
-	$ ./sim -d ganbaru.zoi in.bin out.bin
+	$ ./sim -d ganbaru.zoi in.bin
 
 ### Commands in debug mode
 

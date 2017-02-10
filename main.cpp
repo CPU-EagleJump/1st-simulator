@@ -13,7 +13,6 @@ const uint32_t WORD_SIZE = 4;
 const uint32_t MEM_SIZE = 0x1000000; // 64 MiB
 
 ifstream zoi_file, in_file;
-ofstream out_file;
 bool is_debug_mode;
 
 vector<uint32_t> insts, data;
@@ -62,13 +61,11 @@ int main(int argc, char **argv)
             params.push_back(argv[i]);
     }
 
-    if (params.size() < 3) {
+    if (params.size() < 2) {
         if (params.size() == 0)
             report_error("no zoi file");
         else if (params.size() == 1)
             report_error("no input file");
-        else if (params.size() == 2)
-            report_error("no output file");
         exit(1);
     }
 
@@ -87,13 +84,6 @@ int main(int argc, char **argv)
     if (in_file.fail()) {
         report_error("no such input file");
         zoi_file.close();
-        exit(1);
-    }
-    out_file.open(params[2], ios::out | ios::binary);
-    if (out_file.fail()) {
-        report_error("no such output file");
-        zoi_file.close();
-        in_file.close();
         exit(1);
     }
 

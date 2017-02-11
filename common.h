@@ -87,8 +87,6 @@ private:
     bool halted_f, exception_f;
     uint64_t clocks;
 
-    bool debug_f;
-
     void report_NaN_exception(uint32_t rd);
     void update_pc(uint32_t new_pc);
     void inc_pc() { update_pc(pc + WORD_SIZE); }

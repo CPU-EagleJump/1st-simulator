@@ -115,12 +115,15 @@ bool step_exec(CPU *cpu, const vector<uint32_t> &insts)
         int32_t imm = *(int32_t *)&imm_u;
 
         cpu->jal(rd, imm);
-    } else if (word == 0) {
-        cpu->halt();
-    } else if (opcode == 0b0000010 && funct7 == 0 && rs2 == 0 && rs1 == 0 && funct3 == 0) {
-        cpu->inb(rd);
-    } else if (opcode == 0b0000110 && funct7 == 0 && rs1 == 0 && funct3 == 0 && rd == 0) {
-        cpu->outb(rs2);
+    } else if (opcode == 0b0001011 && funct7 == 0 && rs2 == 0) {
+        if (funct3 == 0b100 && rd == 0 && rs1 == 0)
+            cpu->halt();
+        else if (funct3 == 0b001 && rs1 == 0)
+            cpu->inb(rd);
+        else if (funct3 == 0b010 && rd == 0)
+            cpu->outb(rs1);
+        else
+            is_invalid = true;
     } else { // I type
         uint32_t imm_lo = word >> 20;
         uint32_t shamt = imm_lo & 0b11111;

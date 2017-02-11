@@ -1,4 +1,5 @@
 #include <cstdint>
+#include <algorithm>
 #include <iostream>
 
 #include "common.h"
@@ -151,6 +152,9 @@ bool step_exec(CPU *cpu, const vector<uint32_t> &insts)
         cerr << "Invalid instruction." << endl << endl;
         return false;
     }
+
+    if (is_show_max)
+        cpu->update_max();
 
     cpu->inc_clocks();
     return true;

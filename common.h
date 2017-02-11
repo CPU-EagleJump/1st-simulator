@@ -32,8 +32,10 @@ public:
     bool is_exception() { return exception_f; }
 
     void print_state();
+    void print_max();
 
     void inc_clocks() { clocks++; }
+    void update_max();
 
     // R type
     void add(uint32_t rd, uint32_t rs1, uint32_t rs2);
@@ -78,7 +80,7 @@ public:
 
 private:
     static const uint32_t REG_LEN = 32;
-    uint32_t pc, prev_pc, r[REG_LEN];
+    uint32_t pc, prev_pc, r[REG_LEN], r_max[REG_LEN];
     float f[REG_LEN];
     vector<uint32_t> mem;
     uint32_t mem_size;
@@ -109,6 +111,7 @@ void report_warning(string message);
 
 // main.cpp
 extern ifstream in_file;
+extern bool is_show_max;
 extern vector<uint32_t> insts, inst_lines;
 extern vector<string> lines;
 extern CPU *cpu;

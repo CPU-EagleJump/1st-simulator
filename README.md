@@ -20,6 +20,9 @@ Debug mode
 - `-show-last`  
 Show last CPU status
 
+- `-show-max`  
+Show register max values
+
 - `-show-ulines`  
 Show unreached lines
 

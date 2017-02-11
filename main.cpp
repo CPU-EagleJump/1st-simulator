@@ -14,6 +14,7 @@ const uint32_t WORD_SIZE = 4;
 const uint32_t MEM_SIZE = 0x1000000; // 64 MiB
 
 ifstream zoi_file, in_file;
+bool is_show_max = false;
 
 vector<uint32_t> insts, data;
 vector<uint32_t> inst_lines;
@@ -143,6 +144,8 @@ int main(int argc, char **argv)
         is_debug_mode = true;
     if (options.count("-show-last"))
         is_show_last_state = true;
+    if (options.count("-show-max"))
+        is_show_max = true;
     if (options.count("-show-ulines"))
         is_show_ulines = true;
     if (options.count("-show-ulabels"))
@@ -151,12 +154,14 @@ int main(int argc, char **argv)
     if (options.count("-silent")) {
         is_silent = true;
         is_show_last_state = false;
+        is_show_max = false;
         is_show_ulines = false;
         is_show_ulabels = false;
     }
     if (options.count("-verbose")) {
         is_silent = false;
         is_show_last_state = true;
+        is_show_max = true;
         is_show_ulines = true;
         is_show_ulabels = true;
     }
@@ -247,6 +252,8 @@ int main(int argc, char **argv)
 
     delete cpu;
 
+    if (is_show_max)
+        cpu->print_max();
     if (is_show_ulines)
         show_unreached_lines();
     if (is_show_ulabels)

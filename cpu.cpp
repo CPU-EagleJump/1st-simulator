@@ -14,9 +14,9 @@ CPU::CPU(uint32_t mem_size, vector<uint32_t> static_data)
 {
     pc = 0;
     prev_pc = 0;
-    r[0] = 0;
     for (int i = 0; i < REG_LEN; i++) {
         r[i] = 0;
+        r_max[i] = 0;
         f[i] = 0;
     }
     mem = vector<uint32_t>(mem_size);
@@ -103,6 +103,30 @@ void CPU::print_state()
             cerr << endl;
         else
             cerr << " ";
+    }
+}
+
+void CPU::print_max()
+{
+    cerr << endl << "[Register max values]" << endl;
+    cerr << "GPRs" << endl;
+    for (int i = 0; i < REG_LEN; i++) {
+        cerr << "x";
+        print_dec_2(i);
+        cerr << " = ";
+        print_dec_10(r_max[i]);
+        cerr << ";";
+        if (i % 4 == 3)
+            cerr << endl;
+        else
+            cerr << " ";
+    }
+}
+
+void CPU::update_max()
+{
+    for (int i = 0; i < REG_LEN; i++) {
+        r_max[i] = max(r_max[i], r[i]);
     }
 }
 

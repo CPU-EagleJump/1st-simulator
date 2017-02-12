@@ -425,9 +425,9 @@ void CPU::inb(uint32_t rd)
     inc_pc();
 }
 
-void CPU::outb(uint32_t rs2)
+void CPU::outb(uint32_t rs1)
 {
-    cout << (char)r[rs2];
+    cout << (char)r[rs1];
 
     inc_pc();
 }

@@ -76,7 +76,7 @@ public:
     // original
     void halt();
     void inb(uint32_t rd);
-    void outb(uint32_t rs2);
+    void outb(uint32_t rs1);
 
 private:
     static const uint32_t REG_LEN = 32;

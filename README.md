@@ -20,6 +20,9 @@ Debug mode
 - `-show-last`  
 Show last CPU status
 
+- `-show-stat`  
+Show instruction statistics
+
 - `-show-max`  
 Show register max values
 
@@ -28,6 +31,9 @@ Show unreached lines
 
 - `-show-ulabels`  
 Show unreached labels
+
+- `-sort-stat`  
+Sort instruction statistics (descending)
 
 - `-silent`
 - `-verbose`

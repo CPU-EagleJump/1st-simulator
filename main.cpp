@@ -138,10 +138,14 @@ int main(int argc, char **argv)
 
     bool is_debug_mode = false;
     bool is_silent = false;
-    bool is_show_last_state = false, is_show_ulines = false, is_show_ulabels = false;
+    bool is_show_last_state = false, is_show_stat = false, is_sort_stat = false, is_show_ulines = false, is_show_ulabels = false;
 
     if (options.count("-d"))
         is_debug_mode = true;
+    if (options.count("-show-stat"))
+        is_show_stat = true;
+    if (options.count("-sort-stat"))
+        is_sort_stat = true;
     if (options.count("-show-last"))
         is_show_last_state = true;
     if (options.count("-show-max"))
@@ -153,6 +157,7 @@ int main(int argc, char **argv)
 
     if (options.count("-silent")) {
         is_silent = true;
+        is_show_stat = false;
         is_show_last_state = false;
         is_show_max = false;
         is_show_ulines = false;
@@ -160,6 +165,7 @@ int main(int argc, char **argv)
     }
     if (options.count("-verbose")) {
         is_silent = false;
+        is_show_stat = true;
         is_show_last_state = true;
         is_show_max = true;
         is_show_ulines = true;
@@ -252,6 +258,8 @@ int main(int argc, char **argv)
 
     delete cpu;
 
+    if (is_show_stat)
+        cpu->print_inst_stat(is_sort_stat);
     if (is_show_max)
         cpu->print_max();
     if (is_show_ulines)

@@ -16,6 +16,17 @@ uint32_t text_addr_of_lnum(uint32_t lnum);
 bool process_command(string cmd_line);
 
 // cpu.cpp
+
+enum class InstType
+{
+    add, sub, or_, fadd, fsub, fmul, fsqrt, fdiv, fsgnj, fsgnjn, fsgnjx,
+    feq, fle, fcvt_w_s, fcvt_s_w, fmv_s_x, addi, slli, srai, lw, flw, jalr,
+    sw, fsw, beq, bne, blt, bge, lui, jal, halt, inb, outb,
+    sentinel
+};
+
+const int INST_LEN = static_cast<int>(InstType::sentinel);
+
 class CPU
 {
 public:
@@ -32,6 +43,7 @@ public:
     bool is_exception() { return exception_f; }
 
     void print_state();
+    void print_inst_stat(bool is_sort);
     void print_max();
 
     void inc_clocks() { clocks++; }
@@ -86,6 +98,7 @@ private:
     uint32_t mem_size;
     bool halted_f, exception_f;
     uint64_t clocks;
+    uint64_t inst_stat[INST_LEN];
 
     void report_NaN_exception(uint32_t rd);
     void update_pc(uint32_t new_pc);
